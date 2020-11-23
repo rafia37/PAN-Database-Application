@@ -1,3 +1,25 @@
+DROP TABLE IF EXISTS Person;
+DROP TABLE IF EXISTS External_organization;
+DROP TABLE IF EXISTS Emergency_contact;
+DROP TABLE IF EXISTS Client;
+DROP TABLE IF EXISTS Volunteer;
+DROP TABLE IF EXISTS Employee;
+DROP TABLE IF EXISTS Donor;
+DROP TABLE IF EXISTS Team;
+DROP TABLE IF EXISTS Work;
+DROP TABLE IF EXISTS Serves;
+DROP TABLE IF EXISTS Needs;
+DROP TABLE IF EXISTS Insurance_providers;
+DROP TABLE IF EXISTS Expenses;
+DROP TABLE IF EXISTS Donation;
+DROP TABLE IF EXISTS Contribute;
+DROP TABLE IF EXISTS Donate;
+DROP TABLE IF EXISTS Sponsors;
+
+
+
+
+
 CREATE TABLE External_organization (
   Org_name VARCHAR(50) PRIMARY KEY,
   Mailing_address VARCHAR(100) NOT NULL,
@@ -67,7 +89,7 @@ CREATE TABLE Volunteer (
 
 CREATE TABLE Employee (
   SSN INT,
-  Salary real NOT NULL,
+  Salary REAL NOT NULL,
   Marital_status VARCHAR(20) NOT NULL,
   Hire_date VARCHAR(20) NOT NULL,
   CONSTRAINT PK_emp_ssn PRIMARY KEY (SSN),
@@ -78,7 +100,7 @@ CREATE TABLE Employee (
 
 CREATE TABLE Donor (
   SSN INT,
-  Description VARCHAR(100) DEFAULT 'General donation',
+  Donation_description VARCHAR(100) DEFAULT 'General donation',
   CONSTRAINT PK_don_ssn PRIMARY KEY (SSN),
   CONSTRAINT FK_don_ssn FOREIGN KEY (SSN) REFERENCES Person (SSN)
   ON DELETE CASCADE
@@ -89,9 +111,9 @@ CREATE TABLE Team (
   Team_name VARCHAR(20) PRIMARY KEY,
   Team_type VARCHAR(20) NOT NULL,
   Date_formed VARCHAR(20) NOT NULL,
-  Employee_SSN INT NOT NULL,
-  Report_date VARCHAR(20) NOT NULL,
-  Report_description VARCHAR(100) NOT NULL,
+  Employee_SSN INT,
+  Report_date VARCHAR(20) DEFAULT 'Unavailable',
+  Report_description VARCHAR(100) DEFAULT 'Unavailable',
   CONSTRAINT FK_team FOREIGN KEY (Employee_SSN) REFERENCES Employee (SSN)
 );
 
