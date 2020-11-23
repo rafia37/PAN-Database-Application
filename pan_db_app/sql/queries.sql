@@ -9,7 +9,7 @@ CREATE PROCEDURE insert_person
 (
     @ssn INT,
     @name VARCHAR(50),
-    @dob VARCHAR(20),
+    @dob DATETIME,
     @race VARCHAR(20),
     @gender VARCHAR(20),
     @profession VARCHAR(50),
@@ -116,9 +116,9 @@ CREATE PROCEDURE query1
 (
     @name VARCHAR(20),
     @type VARCHAR(20),
-    @date VARCHAR(20),
+    @date DATETIME,
     @ssn INT,
-    @report_date VARCHAR(20),
+    @report_date DATETIME,
     @report_des VARCHAR(100)
 )
 AS
@@ -153,7 +153,7 @@ CREATE PROCEDURE query2a
     @doc_pn VARCHAR(20),
     @att_name VARCHAR(50),
     @att_pn VARCHAR(20),
-    @date VARCHAR(20)
+    @date DATETIME
 )
 AS
 BEGIN
@@ -195,8 +195,8 @@ GO
 CREATE PROCEDURE query3a 
 (
     @ssn INT,
-    @j_date VARCHAR(20),
-    @t_date VARCHAR(20),
+    @j_date DATETIME,
+    @t_date DATETIME,
     @t_loc VARCHAR(20)
 )
 AS
@@ -254,7 +254,7 @@ CREATE PROCEDURE query5a
     @ssn INT,
     @salary REAL,
     @marital VARCHAR(20),
-    @date VARCHAR(20)
+    @date DATETIME
 )
 AS
 BEGIN
@@ -275,9 +275,9 @@ CREATE PROCEDURE query5b
 (
     @Nname VARCHAR(20),
     @Ntype VARCHAR(20),
-    @Ndate VARCHAR(20),
+    @Ndate DATETIME,
     @Nssn INT,
-    @Nreport_date VARCHAR(20),
+    @Nreport_date DATETIME,
     @Nreport_des VARCHAR(100)
 )
 AS
@@ -309,7 +309,7 @@ GO
 CREATE PROCEDURE query6 
 (
     @ssn INT,
-    @date VARCHAR(20),
+    @date DATETIME,
     @amount REAL,
     @descrip VARCHAR(100)
 )
@@ -406,7 +406,7 @@ GO
 CREATE PROCEDURE query8b 
 (
     @did INT,
-    @date VARCHAR(20),
+    @date DATETIME,
     @amount REAL,
     @type VARCHAR(20),
     @camp VARCHAR(50),
@@ -473,7 +473,164 @@ GO
 
 
 
+----QUERY 10----
+DROP PROCEDURE IF EXISTS query10;
+
+GO
+CREATE PROCEDURE query10 
+(
+    @ssn INT    
+)
+AS
+BEGIN
+    SELECT Doctor_name, Doctor_phone_number FROM dbo.Client
+    WHERE SSN = @ssn;
+END
+GO
 
 
 
+
+----QUERY 11----
+DROP PROCEDURE IF EXISTS query11;
+
+GO
+CREATE PROCEDURE query11 
+(
+    @ssn INT,
+    @start DATETIME,
+    @stop DATETIME    
+)
+AS
+BEGIN
+    SELECT SUM(Amount) FROM dbo.Expenses
+    WHERE Employee_SSN = @ssn
+        AND Date_charged BETWEEN @start and @stop;
+END
+GO
+
+
+
+----QUERY 12----
+DROP PROCEDURE IF EXISTS query12;
+
+GO
+CREATE PROCEDURE query12 
+(
+    @cli_ssn INT    
+)
+AS
+BEGIN
+    SELECT * FROM dbo.Person
+    WHERE SSN = 
+        (SELECT w.Volunteer_SSN AS SSN 
+        FROM dbo.Work AS w
+        JOIN dbo.Serves AS s
+            ON w.Team_name = s.Team_name 
+        WHERE s.Client_SSN = @cli_ssn);
+END
+GO
+
+
+
+----QUERY 13----
+DROP PROCEDURE IF EXISTS query13;
+
+GO
+CREATE PROCEDURE query13 
+AS
+BEGIN
+    SELECT person_name AS Client_Name, Mailing_address, Email_address, Home_phone_number, Work_phone_umber, Cell_phone_number 
+    FROM dbo.Person
+    WHERE SSN = 
+        (SELECT sr.Client_SSN AS SSN 
+        FROM dbo.Serves AS sr
+        JOIN dbo.Sponsors AS sp
+            ON sr.Team_name = sp.Team_name 
+        WHERE SUBSTRING(sp.Org_name, 1, 1) BETWEEN 'B' AND 'K')
+    ORDER BY Client_Name;
+END
+GO
+
+
+
+----QUERY 14----
+DROP PROCEDURE IF EXISTS query14;
+
+GO
+CREATE PROCEDURE query14 
+AS
+BEGIN
+    SELECT person_name AS Employee_Name, SUM(Amount) AS Total_Donation
+    FROM dbo.Donate AS d1
+    JOIN dbo.Donation AS d2 ON d1.DonationID = d2.DonationID
+    JOIN dbo.Person AS p ON p.SSN = d1.Donor_SSN
+    WHERE Donor_SSN = 
+        (SELECT d.SSN AS Donor_SSN
+        FROM dbo.Donor AS d, dbo.Employee AS e 
+        WHERE d.SSN = e.SSN)
+    GROUP BY person_name;
+END
+GO
+
+
+
+
+----QUERY 15----
+DROP PROCEDURE IF EXISTS query15;
+
+GO
+CREATE PROCEDURE query15 
+(
+    @date DATETIME    
+)
+AS
+BEGIN
+    SELECT Team_name FROM dbo.Team
+    WHERE Date_formed BETWEEN @date AND GETDATE();
+END
+GO
+
+
+
+----QUERY 16----
+DROP PROCEDURE IF EXISTS query16;
+
+GO
+CREATE PROCEDURE query16 
+AS
+BEGIN
+    UPDATE dbo.Employee
+    SET Salary = Salary*1.1
+    WHERE SSN =  
+        (SELECT temp.SSN 
+        FROM 
+            (SELECT Employee_SSN AS SSN, COUNT(*) AS nDon 
+            FROM dbo.Team
+            GROUP BY Employee_SSN) AS temp 
+        WHERE temp.nDon > 1 
+        );
+END
+GO
+
+
+
+
+
+----QUERY 17----
+DROP PROCEDURE IF EXISTS query17;
+
+GO
+CREATE PROCEDURE query17 
+AS
+BEGIN
+    DELETE FROM dbo.Person 
+    WHERE SSN IN
+        (SELECT ip.Client_SSN AS SSN
+        FROM dbo.Insurance_providers AS ip
+        JOIN dbo.Needs AS nd
+            ON ip.Client_SSN = nd.Client_SSN
+        WHERE )
+END
+GO
 
