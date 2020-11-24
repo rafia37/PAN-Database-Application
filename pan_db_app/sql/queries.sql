@@ -7,7 +7,7 @@ DROP PROCEDURE IF EXISTS insert_person;
 GO
 CREATE PROCEDURE insert_person
 (
-    @ssn INT,
+    @ssn VARCHAR(20),
     @name VARCHAR(50),
     @dob DATETIME,
     @race VARCHAR(20),
@@ -24,7 +24,7 @@ CREATE PROCEDURE insert_person
 AS
 BEGIN
     INSERT INTO dbo.Person
-        (SSN, person_name, Date_of_birth, Race, Gender, Profession, Mailing_address, Email_address, Home_phone_number, Work_phone_umber, Cell_phone_number, Mailing_list, Company_name)
+        (SSN, person_name, Date_of_birth, Race, Gender, Profession, Mailing_address, Email_address, Home_phone_number, Work_phone_number, Cell_phone_number, Mailing_list, Company_name)
     VALUES
         (@ssn, @name, @dob, @race, @gender, @profession, @m_address, @e_address, @home_pn, @work_pn, @cell_pn, @m_list, @company)
 END
@@ -37,7 +37,7 @@ DROP PROCEDURE IF EXISTS insert_EC;
 GO
 CREATE PROCEDURE insert_EC
 (
-    @ssn INT,
+    @ssn VARCHAR(20),
     @ec_name VARCHAR(50),
     @relation VARCHAR(50),
     @ec_Maddress VARCHAR(100),
@@ -63,7 +63,7 @@ DROP PROCEDURE IF EXISTS insert_needs;
 GO
 CREATE PROCEDURE insert_needs 
 (
-    @ssn INT,
+    @ssn VARCHAR(20),
     @need VARCHAR(20),
     @imp INT
 )
@@ -84,7 +84,7 @@ DROP PROCEDURE IF EXISTS insert_ip;
 GO
 CREATE PROCEDURE insert_ip 
 (
-    @ssn INT,
+    @ssn VARCHAR(20),
     @policyID VARCHAR(50),
     @providerID VARCHAR(50),
     @p_address VARCHAR(100),
@@ -117,7 +117,7 @@ CREATE PROCEDURE query1
     @name VARCHAR(20),
     @type VARCHAR(20),
     @date DATETIME,
-    @ssn INT,
+    @ssn VARCHAR(20),
     @report_date DATETIME,
     @report_des VARCHAR(100)
 )
@@ -148,7 +148,7 @@ DROP PROCEDURE IF EXISTS query2a;
 GO
 CREATE PROCEDURE query2a 
 (
-    @ssn INT,
+    @ssn VARCHAR(20),
     @doc_name VARCHAR(50),
     @doc_pn VARCHAR(20),
     @att_name VARCHAR(50),
@@ -173,7 +173,7 @@ GO
 CREATE PROCEDURE query2b 
 (
     @team VARCHAR(20),
-    @cSSN INT,
+    @cSSN VARCHAR(20),
     @active BINARY(1)
 )
 AS
@@ -194,7 +194,7 @@ DROP PROCEDURE IF EXISTS query3a;
 GO
 CREATE PROCEDURE query3a 
 (
-    @ssn INT,
+    @ssn VARCHAR(20),
     @j_date DATETIME,
     @t_date DATETIME,
     @t_loc VARCHAR(20)
@@ -217,7 +217,7 @@ GO
 CREATE PROCEDURE query3b 
 (
     @team VARCHAR(20),
-    @ssn INT,
+    @ssn VARCHAR(20),
     @active BINARY(1),
     @hours REAL,
     @leader BINARY(1)
@@ -251,7 +251,7 @@ DROP PROCEDURE IF EXISTS query5a;
 GO
 CREATE PROCEDURE query5a 
 (
-    @ssn INT,
+    @ssn VARCHAR(20),
     @salary REAL,
     @marital VARCHAR(20),
     @date DATETIME
@@ -276,7 +276,7 @@ CREATE PROCEDURE query5b
     @Nname VARCHAR(20),
     @Ntype VARCHAR(20),
     @Ndate DATETIME,
-    @Nssn INT,
+    @Nssn VARCHAR(20),
     @Nreport_date DATETIME,
     @Nreport_des VARCHAR(100)
 )
@@ -308,7 +308,7 @@ DROP PROCEDURE IF EXISTS query6;
 GO
 CREATE PROCEDURE query6 
 (
-    @ssn INT,
+    @ssn VARCHAR(20),
     @date DATETIME,
     @amount REAL,
     @descrip VARCHAR(100)
@@ -385,7 +385,7 @@ DROP PROCEDURE IF EXISTS query8a;
 GO
 CREATE PROCEDURE query8a 
 (
-    @ssn INT,
+    @ssn VARCHAR(20),
     @descrip VARCHAR(100)
 )
 AS
@@ -432,7 +432,7 @@ DROP PROCEDURE IF EXISTS query8c;
 GO
 CREATE PROCEDURE query8c 
 (
-    @ssn INT,
+    @ssn VARCHAR(20),
     @id INT    
 )
 AS
@@ -479,7 +479,7 @@ DROP PROCEDURE IF EXISTS query10;
 GO
 CREATE PROCEDURE query10 
 (
-    @ssn INT    
+    @ssn VARCHAR(20)    
 )
 AS
 BEGIN
@@ -497,7 +497,7 @@ DROP PROCEDURE IF EXISTS query11;
 GO
 CREATE PROCEDURE query11 
 (
-    @ssn INT,
+    @ssn VARCHAR(20),
     @start DATETIME,
     @stop DATETIME    
 )
@@ -517,7 +517,7 @@ DROP PROCEDURE IF EXISTS query12;
 GO
 CREATE PROCEDURE query12 
 (
-    @cli_ssn INT    
+    @cli_ssn VARCHAR(20)    
 )
 AS
 BEGIN
@@ -540,7 +540,7 @@ GO
 CREATE PROCEDURE query13 
 AS
 BEGIN
-    SELECT person_name AS Client_Name, Mailing_address, Email_address, Home_phone_number, Work_phone_umber, Cell_phone_number 
+    SELECT person_name AS Client_Name, Mailing_address, Email_address, Home_phone_number, Work_phone_number, Cell_phone_number 
     FROM dbo.Person
     WHERE SSN = 
         (SELECT sr.Client_SSN AS SSN 
@@ -561,7 +561,7 @@ GO
 CREATE PROCEDURE query14 
 AS
 BEGIN
-    SELECT person_name AS Employee_Name, SUM(Amount) AS Total_Donation
+    SELECT person_name AS Employee_Name, SUM(Amount) AS Total_Donation, MAX(Anonymity)
     FROM dbo.Donate AS d1
     JOIN dbo.Donation AS d2 ON d1.DonationID = d2.DonationID
     JOIN dbo.Person AS p ON p.SSN = d1.Donor_SSN
@@ -569,7 +569,8 @@ BEGIN
         (SELECT d.SSN AS Donor_SSN
         FROM dbo.Donor AS d, dbo.Employee AS e 
         WHERE d.SSN = e.SSN)
-    GROUP BY person_name;
+    GROUP BY person_name
+    ORDER BY Total_Donation;
 END
 GO
 

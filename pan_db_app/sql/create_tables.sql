@@ -33,7 +33,7 @@ CREATE TABLE External_organization (
 );
 
 CREATE TABLE Person (
-  SSN INT PRIMARY KEY,
+  SSN VARCHAR(20) PRIMARY KEY,
   person_name VARCHAR(50) NOT NULL,
   Date_of_birth DATETIME NOT NULL,
   Race VARCHAR(20) NOT NULL,
@@ -42,7 +42,7 @@ CREATE TABLE Person (
   Mailing_address VARCHAR(100) NOT NULL,
   Email_address VARCHAR(100) NOT NULL,
   Home_phone_number VARCHAR(20) NOT NULL,
-  Work_phone_umber VARCHAR(20) NOT NULL,
+  Work_phone_number VARCHAR(20) NOT NULL,
   Cell_phone_number VARCHAR(20) NOT NULL,
   Mailing_list BINARY(1) DEFAULT 0,
   Company_name VARCHAR(50) DEFAULT 'N/A',
@@ -50,7 +50,7 @@ CREATE TABLE Person (
 );
 
 CREATE TABLE Emergency_contact (
-  SSN INT,
+  SSN VARCHAR(20),
   EC_name VARCHAR(50) NOT NULL,
   Relationship VARCHAR(50) NOT NULL,
   Mailing_address VARCHAR(100),
@@ -65,7 +65,7 @@ CREATE TABLE Emergency_contact (
 );
 
 CREATE TABLE Client (
-  SSN INT,
+  SSN VARCHAR(20),
   Doctor_name VARCHAR(50) NOT NULL,
   Doctor_phone_number VARCHAR(20) NOT NULL,
   Attorney_name VARCHAR(50) NOT NULL,
@@ -78,7 +78,7 @@ CREATE TABLE Client (
 );
 
 CREATE TABLE Volunteer (
-  SSN INT,
+  SSN VARCHAR(20),
   Joining_date DATETIME NOT NULL,
   Last_training_date DATETIME NOT NULL,
   Last_training_location VARCHAR(20) NOT NULL,
@@ -89,7 +89,7 @@ CREATE TABLE Volunteer (
 );
 
 CREATE TABLE Employee (
-  SSN INT,
+  SSN VARCHAR(20),
   Salary REAL NOT NULL,
   Marital_status VARCHAR(20) NOT NULL,
   Hire_date DATETIME NOT NULL,
@@ -100,7 +100,7 @@ CREATE TABLE Employee (
 );
 
 CREATE TABLE Donor (
-  SSN INT,
+  SSN VARCHAR(20),
   Donation_description VARCHAR(100) DEFAULT 'General donation',
   CONSTRAINT PK_don_ssn PRIMARY KEY (SSN),
   CONSTRAINT FK_don_ssn FOREIGN KEY (SSN) REFERENCES Person (SSN)
@@ -112,7 +112,7 @@ CREATE TABLE Team (
   Team_name VARCHAR(20) PRIMARY KEY,
   Team_type VARCHAR(20) NOT NULL,
   Date_formed DATETIME NOT NULL,
-  Employee_SSN INT,
+  Employee_SSN VARCHAR(20),
   Report_date DATETIME,
   Report_description VARCHAR(100) DEFAULT 'Unavailable',
   CONSTRAINT FK_team FOREIGN KEY (Employee_SSN) REFERENCES Employee (SSN)
@@ -120,7 +120,7 @@ CREATE TABLE Team (
 
 CREATE TABLE Work (
   Team_name VARCHAR(20) NOT NULL,
-  Volunteer_SSN INT NOT NULL,
+  Volunteer_SSN VARCHAR(20) NOT NULL,
   Active BINARY(1) NOT NULL,
   Monthly_hours REAL NOT NULL,
   Leader BINARY(1) NOT NULL,
@@ -131,7 +131,7 @@ CREATE TABLE Work (
 
 CREATE TABLE Serves (
   Team_name VARCHAR(20) NOT NULL,
-  Client_SSN INT NOT NULL,
+  Client_SSN VARCHAR(20) NOT NULL,
   Active BINARY(1) NOT NULL,
   CONSTRAINT PK_serve PRIMARY KEY (Team_name, Client_SSN),
   CONSTRAINT FK_serve_tn FOREIGN KEY (Team_name) REFERENCES Team (Team_name),
@@ -139,7 +139,7 @@ CREATE TABLE Serves (
 );
 
 CREATE TABLE Expenses (
-  Employee_SSN INT NOT NULL,
+  Employee_SSN VARCHAR(20) NOT NULL,
   Date_charged DATETIME NOT NULL,
   Amount REAL NOT NULL,
   Expense_description VARCHAR(100) NOT NULL,
@@ -148,7 +148,7 @@ CREATE TABLE Expenses (
 );
 
 CREATE TABLE Insurance_providers (
-  Client_SSN INT NOT NULL,
+  Client_SSN VARCHAR(20) NOT NULL,
   PolicyID VARCHAR(50) NOT NULL,
   ProviderID VARCHAR(50) NOT NULL,
   Provider_address VARCHAR(100) NOT NULL,
@@ -158,7 +158,7 @@ CREATE TABLE Insurance_providers (
 );
 
 CREATE TABLE Needs (
-  Client_SSN INT NOT NULL,
+  Client_SSN VARCHAR(20) NOT NULL,
   Need_name VARCHAR(20) NOT NULL,
   Importance INT NOT NULL,
   CONSTRAINT PK_need PRIMARY KEY (Client_SSN, Need_name),
@@ -179,7 +179,7 @@ CREATE TABLE Donation (
 );
 
 CREATE TABLE Donate (
-  Donor_SSN INT NOT NULL,
+  Donor_SSN VARCHAR(20) NOT NULL,
   DonationID INT NOT NULL,
   CONSTRAINT PK_donate PRIMARY KEY (Donor_SSN, DonationID),
   CONSTRAINT FK_donate_ssn FOREIGN KEY (Donor_SSN) REFERENCES Donor (SSN),
