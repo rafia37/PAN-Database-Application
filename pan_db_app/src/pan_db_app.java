@@ -63,7 +63,7 @@ public class pan_db_app {
 	            	
 	            	//Predefining potential null variables
 	            	//-------------------------------------
-	            	int ssn = 1234567890;
+	            	String ssn = "1234567890";
 	            	String report_date = "1900-01-01 00:00:00";
 	            	String report_des = "unavailable";
 	            	Timestamp rd = Timestamp.valueOf(report_date);
@@ -89,8 +89,7 @@ public class pan_db_app {
                     
                     if (einfo=="y") {
 	                    System.out.println("Please enter integer Employee SSN (If known):");
-	                    ssn = sc.nextInt(); // Read in user input of Department ID
-	                    sc.nextLine(); //To consume the next line character/tag
+	                    ssn = sc.nextLine(); 
 	                    
 	                    System.out.println("Please enter report date (If available):");
 	                    report_date = sc.nextLine(); // Read in user input of faculty name (white-spaces allowed).
@@ -115,9 +114,9 @@ public class pan_db_app {
             			// Set the parameters
             			statement.setString(1, tname);
                         statement.setString(2, ttype);
-                        statement.setTimestamp(3, td);  //2001-12-23 00:00:00
+                        statement.setTimestamp(3, td);
                         if (einfo.equals("y")) {
-	                        statement.setInt(4, ssn);
+	                        statement.setString(4, ssn);
 	                        statement.setTimestamp(5, rd);
 	                        statement.setString(6, report_des); 
                         } else {
@@ -130,7 +129,7 @@ public class pan_db_app {
                         // Call stored procedure
             			System.out.println("Inserting new row into team..");
             			statement.execute();
-            			System.out.println("1 new row inserted");
+            			System.out.println("1 new row inserted \n");
             			
                     }
 
@@ -139,52 +138,202 @@ public class pan_db_app {
 	                
 	            case "2": // Insert a new client and associate with teams
 	            	
-	            	//////////////////////Creating Person//////////////////////////
+	            	String ssnP1; //Client ssn
+	            	
+	            	System.out.println("Does the client already exist in the person database? [y/n] :");
+	            	sc.nextLine();
+	            	String pExists = sc.nextLine();
+	            	
+	            	if (pExists.equals("n")) {
+		            	
+		            	//////////////////////Creating Person//////////////////////////
+		            	//Predefining variables for later use
+		            	//------------------------------------
+		            	String name;
+		            	String bday;
+		            	String race;
+		            	String gender;
+		            	String profession;
+		            	String mailing_add;
+		            	String email;
+		            	String home_pn;
+		            	String work_pn;
+		            	String cell_pn;
+		            	int mailing_list;
+		            	String company;
+		            	
+		            	
+		            	// Collect values for every record from user inputs
+		            	//--------------------------------------------------
+		            	
+		                System.out.println("Please enter person ssn:");
+		                ssnP1 = sc.nextLine();
+		                
+		                System.out.println("Please enter person name:");
+		                name = sc.nextLine(); 
+		                
+		                System.out.println("Please enter date of birth (yyyy-mm-dd hh:mm:ss):");
+		                bday = sc.nextLine();  //2001-12-23 00:00:00
+		                Timestamp dob = Timestamp.valueOf(bday);
+		                
+		                System.out.println("Please enter race:");
+		                race = sc.nextLine();
+		                
+		                System.out.println("Please enter gender:");
+		                gender = sc.nextLine();
+		                
+		                System.out.println("Please enter profession:");
+		                profession = sc.nextLine();
+		                
+		                System.out.println("Please enter mailing address:");
+		                mailing_add = sc.nextLine();
+		                
+		                System.out.println("Please enter email:");
+		                email = sc.nextLine();
+		                
+		                System.out.println("Please enter home phone number:");
+		                home_pn = sc.nextLine();
+		                
+		                System.out.println("Please enter work phone number:");
+		                work_pn = sc.nextLine();
+		                
+		                System.out.println("Please enter cell phone number:");
+		                cell_pn = sc.nextLine();
+		                
+		                System.out.println("Please enter whether is person is in the mailing list or not \n" + "Possible values are 1 for yes, 0 for no and 2 for unknown:");
+		                mailing_list = sc.nextInt();
+		                sc.nextLine();
+		                
+		                System.out.println("Please enter the affiliated company name (na if no affiliation):");
+		                company = sc.nextLine();
+		            
+		                
+		                
+		                //Connecting to database and performing query
+		                //---------------------------------------------
+		                
+		                System.out.println("Connecting to the database...");
+		                // Get a database connection and prepare a query statement
+		                try (final Connection connection = DriverManager.getConnection(URL)) {
+		                	
+		                	// Prepare the stored procedure call
+		                	final PreparedStatement stmt_person = connection.prepareCall("{call insert_person(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}");
+		        			
+		        			// Set the parameters
+		                	stmt_person.setString(1, ssnP1);
+		                	stmt_person.setString(2, name);
+		                	stmt_person.setTimestamp(3, dob);  //2001-12-23 
+		                	stmt_person.setString(4, race);
+		                	stmt_person.setString(5, gender);
+		                	stmt_person.setString(6, profession);
+		                	stmt_person.setString(7, mailing_add);
+		                	stmt_person.setString(8, email);
+		                	stmt_person.setString(9, home_pn);
+		                	stmt_person.setString(10, work_pn);
+		                	stmt_person.setString(11, cell_pn);
+		                    
+		                    //Potential null variables
+		                    if (mailing_list == 2) {
+		                    	stmt_person.setNull(12, Types.NULL); 
+		                	} else {
+		                		stmt_person.setInt(12,  mailing_list);
+		                	}
+		                    
+		                    if (company.equals("na")) {
+		                    	stmt_person.setNull(13, Types.NULL); 
+		                	} else {
+		                		stmt_person.setString(13,  company);
+		                	}
+		            	
+		                                         
+		                    // Call stored procedures
+		        			System.out.println("Inserting new row into person..");
+		        			stmt_person.execute();
+		        			System.out.println("1 new row inserted \n");
+		        			
+		        			
+		        			///////////////////////Emergency Contacts/////////////////////
+		        			System.out.println("How many emergency contacts for this person?:");
+			                int nEC = sc.nextInt();
+			                sc.nextLine();
+			                
+		        			// Prepare the stored procedure call
+		                	final PreparedStatement stmt_ec = connection.prepareCall("{call insert_EC(?, ?, ?, ?, ?, ?, ?, ?)}");
+		                	while (nEC>0) {
+		                		
+		                		System.out.println("Enter Information for Emergency Contact #"+nEC);
+		                		
+		                		System.out.println("Please enter EC name:");
+		    	                name = sc.nextLine();
+		    	                
+		    	                System.out.println("Please enter EC relationship:");
+		    	                String relationship = sc.nextLine();
+		    	                
+		    	                System.out.println("Please enter EC mailing address(na is acceptable):");
+		    	                mailing_add = sc.nextLine();
+		    	                
+		    	                System.out.println("Please enter EC email:");
+		    	                email = sc.nextLine();
+		    	                
+		    	                System.out.println("Please enter EC home phone number:");
+		    	                home_pn = sc.nextLine();
+		    	                
+		    	                System.out.println("Please enter EC work phone number(na is acceptable):");
+		    	                work_pn = sc.nextLine();
+		    	                
+		    	                System.out.println("Please enter EC cell phone number(na is acceptable):");
+		    	                cell_pn = sc.nextLine();
+			        			
+			        			// Set the parameters
+			                	stmt_ec.setString(1, ssnP1);
+			                	stmt_ec.setString(2, name);
+			                	stmt_ec.setString(3, relationship);
+			                	stmt_ec.setString(5, email);
+			                	stmt_ec.setString(6, home_pn);
+			                    
+			                    //Potential null variables
+			                	if (mailing_add.equals("na")) {stmt_ec.setNull(4, Types.NULL);} else {stmt_ec.setString(4,  mailing_add);}
+			                    if (work_pn.equals("na")) {stmt_ec.setNull(7, Types.NULL);} else {stmt_ec.setString(7,  work_pn);}
+			                    if (cell_pn.equals("na")) {stmt_ec.setNull(8, Types.NULL); } else {stmt_ec.setString(8,  cell_pn);}
+			            	
+			                                         
+			                    // Call stored procedures
+			        			System.out.println("Inserting new row into emergency contact.");
+			        			stmt_ec.execute();
+			        			System.out.println("1 new row inserted \n");
+		        				
+		        				nEC--;
+		        			}
+		        			
+		                }
+	            	} else {
+	            		System.out.println("Please enter client ssn:");
+		                ssnP1 = sc.nextLine();
+	            	}
+	                
+	                
+	                
+	                //////////////////////Creating Client//////////////////////////
+	            	
 	            	// Collect values for every record from user inputs
 	            	//--------------------------------------------------
-	            	
-	                System.out.println("Please enter person ssn:");
-	                int ssnP1 = sc.nextInt();
-	                sc.nextLine();
 	                
-	                System.out.println("Please enter person name:");
-	                String name = sc.nextLine(); 
+	                System.out.println("Please enter client specific information:");
+	                System.out.println("Please enter doctor name:");
+	                String doc_name = sc.nextLine();
 	                
-	                System.out.println("Please enter date of birth (yyyy-mm-dd hh:mm:ss):");
-	                String bday = sc.nextLine();  //2001-12-23 00:00:00
-	                Timestamp dob = Timestamp.valueOf(bday);
+	                System.out.println("Please enter doctor phone number:");
+	                String doc_pn = sc.nextLine(); 
 	                
-	                System.out.println("Please enter race:");
-	                String race = sc.nextLine();
+	                System.out.println("Please enter attorney name:");
+	                String att_name = sc.nextLine();
 	                
-	                System.out.println("Please enter gender:");
-	                String gender = sc.nextLine();
+	                System.out.println("Please enter attorney phone number:");
+	                String att_pn = sc.nextLine();
 	                
-	                System.out.println("Please enter profession:");
-	                String profession = sc.nextLine();
-	                
-	                System.out.println("Please enter mailing address:");
-	                String mailing_add = sc.nextLine();
-	                
-	                System.out.println("Please enter email:");
-	                String email = sc.nextLine();
-	                
-	                System.out.println("Please enter home phone number:");
-	                String home_pn = sc.nextLine();
-	                
-	                System.out.println("Please enter work phone number:");
-	                String work_pn = sc.nextLine();
-	                
-	                System.out.println("Please enter cell phone number:");
-	                String cell_pn = sc.nextLine();
-	                
-	                System.out.println("Please enter whether is person is in the mailing list or not \n" + "Possible values are 1 for yes, 0 for no and 2 for unknown:");
-	                int mailing_list = sc.nextInt();
-	                sc.nextLine();
-	                
-	                System.out.println("Please enter the affiliated company name (na if no affiliation):");
-	                String company = sc.nextLine();
-	            
+	                System.out.println("Please enter date of first assignment to PAN (yyyy-mm-dd hh:mm:ss):");
+	                String asn_date = sc.nextLine();  //2001-12-23 00:00:00
+	                Timestamp ad = Timestamp.valueOf(asn_date);
 	                
 	                
 	                //Connecting to database and performing query
@@ -195,45 +344,111 @@ public class pan_db_app {
 	                try (final Connection connection = DriverManager.getConnection(URL)) {
 	                	
 	                	// Prepare the stored procedure call
-	                	final PreparedStatement statement = connection.prepareCall("{call insert_person(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}");
+	                	final PreparedStatement stmt_client = connection.prepareCall("{call query2a(?, ?, ?, ?, ?, ?)}");
 	        			
 	        			// Set the parameters
-	        			statement.setInt(1, ssnP1);
-	                    statement.setString(2, name);
-	                    statement.setTimestamp(3, dob);  //2001-12-23 00:00:00
-	                    statement.setString(4, race);
-	                    statement.setString(5, gender);
-	                    statement.setString(6, profession);
-	                    statement.setString(7, mailing_add);
-	                    statement.setString(8, email);
-	                    statement.setString(9, home_pn);
-	                    statement.setString(10, work_pn);
-	                    statement.setString(11, cell_pn);
-	                    
-	                    //Potential null variables
-	                    if (mailing_list == 2) {
-	                    	System.out.println("setting ml to na");
-	                		statement.setNull(12, Types.NULL); 
-	                	} else {
-	                		statement.setInt(12,  mailing_list);
-	                	}
-	                    
-	                    if (company.equals("na")) {
-	                    	System.out.println("setting company to na");
-	                		statement.setNull(13, Types.NULL); 
-	                	} else {
-	                		System.out.println("setting company to " + company);
-	                		System.out.println(company == "na");
-	                		statement.setString(13,  company);
-	                	}
-	            	
-	                                         
-	                    // Call stored procedure
-	        			System.out.println("Inserting new row into person..");
-	        			statement.execute();
-	        			System.out.println("1 new row inserted");
+	                	stmt_client.setString(1, ssnP1);
+	                	stmt_client.setString(2, doc_name); 
+	                	stmt_client.setString(3, doc_pn);
+	                	stmt_client.setString(4, att_name);
+	                	stmt_client.setString(5, att_pn);
+	                	stmt_client.setTimestamp(6, ad);  //2001-12-23
+	                	
+	                	
+	                    // Call stored procedures
+	        			System.out.println("Inserting new row into client..");
+	        			stmt_client.execute();
+	        			System.out.println("1 new row inserted \n");
+	        			
+	        			
+	        			///////////////////////Insurance Providers/////////////////////
+	        			System.out.println("How many insurance policies for this client?:");
+		                int nIP = sc.nextInt();
+		                sc.nextLine();
+		                
+		                //predefining variables for later use
+		                String polID;
+		                String proID;
+		                String proAdd;
+		                String ip_type;
+		                
+	        			// Prepare the stored procedure call
+	                	final PreparedStatement stmt_ip = connection.prepareCall("{call insert_ip(?, ?, ?, ?, ?)}");
+	                	while (nIP>0) {
+	                		
+	                		System.out.println("Enter Information for Insurance policy #"+nIP);
+	                		
+	                		System.out.println("Please enter policy ID:");
+	    	                polID = sc.nextLine();
+	    	                
+	    	                System.out.println("Please enter provider ID:");
+	    	                proID= sc.nextLine();
+	    	                
+	    	                System.out.println("Please enter provider address:");
+	    	                proAdd= sc.nextLine();
+	    	                
+	    	                System.out.println("Please enter insurance type:");
+	    	                ip_type = sc.nextLine();
+	    	                
+	    	                
+		        			// Set the parameters
+		                	stmt_ip.setString(1, ssnP1);
+		                	stmt_ip.setString(2, polID);
+		                	stmt_ip.setString(3, proID);
+		                	stmt_ip.setString(4, proAdd);
+		                	stmt_ip.setString(5, ip_type);
+		                                             
+		                    // Call stored procedures
+		        			System.out.println("Inserting new row into insurance provider.");
+		        			stmt_ip.execute();
+		        			System.out.println("1 new row inserted \n");
+	        				
+	        				nIP--;
+	        			}
+	                	
+	                	
+	                	///////////////////////Needs Table/////////////////////
+	        			System.out.println("How many needs for this client?:");
+		                int nn = sc.nextInt();
+		                sc.nextLine();
+		                
+		                //predefining variables for later use
+		                String need;
+		                int imp;
+		                
+	        			// Prepare the stored procedure call
+	                	final PreparedStatement stmt_need = connection.prepareCall("{call insert_needs(?, ?, ?)}");
+	                	while (nn>0) {
+	                		
+	                		System.out.println("Enter Information for client needs #"+nn);
+	                		
+	    	                System.out.println("Please enter need name:");
+	    	                need= sc.nextLine();
+	    	                
+	    	                System.out.println("Please enter importance value of need (scale of 10):");
+	    	                imp = sc.nextInt();
+	    	                sc.nextLine();
+	    	                
+	    	                
+		        			// Set the parameters
+		                	stmt_ip.setString(1, ssnP1);
+		                	stmt_ip.setString(2, need);
+		                	stmt_ip.setInt(3, imp);
+		                                             
+		                    // Call stored procedures
+		        			System.out.println("Inserting new row into insurance provider.");
+		        			stmt_ip.execute();
+		        			System.out.println("1 new row inserted \n");
+	        				
+	        				nn--;
+	        			}
 	        			
 	                }
+	                
+	                
+	                
+	                
+	                
 	                break;
 	             
 	                
