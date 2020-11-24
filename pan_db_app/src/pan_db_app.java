@@ -483,14 +483,276 @@ public class pan_db_app {
         			
 	                }
 	                
-	                
-	                
-	                
-	                
 	                break;
 	             
 	                
-	            case "3":
+	            case "3": // Insert a new client and associate with teams
+	            	
+	            	String ssnP2; //Client ssn
+	            	
+	            	System.out.println("Does the Volunteer already exist in the person database? [y/n] :");
+	            	sc.nextLine();
+	            	String vExists = sc.nextLine();
+	            	
+	            	if (vExists.equals("n")) {
+		            	
+		            	//////////////////////Creating Person//////////////////////////
+		            	//Predefining variables for later use
+		            	//------------------------------------
+		            	String name;
+		            	String bday;
+		            	String race;
+		            	String gender;
+		            	String profession;
+		            	String mailing_add;
+		            	String email;
+		            	String home_pn;
+		            	String work_pn;
+		            	String cell_pn;
+		            	int mailing_list;
+		            	String company;
+		            	
+		            	
+		            	// Collect values for every record from user inputs
+		            	//--------------------------------------------------
+		            	
+		                System.out.println("Please enter person ssn:");
+		                ssnP2 = sc.nextLine();
+		                
+		                System.out.println("Please enter person name:");
+		                name = sc.nextLine(); 
+		                
+		                System.out.println("Please enter date of birth (yyyy-mm-dd hh:mm:ss):");
+		                bday = sc.nextLine();  //2001-12-23 00:00:00
+		                Timestamp dob = Timestamp.valueOf(bday);
+		                
+		                System.out.println("Please enter race:");
+		                race = sc.nextLine();
+		                
+		                System.out.println("Please enter gender:");
+		                gender = sc.nextLine();
+		                
+		                System.out.println("Please enter profession:");
+		                profession = sc.nextLine();
+		                
+		                System.out.println("Please enter mailing address:");
+		                mailing_add = sc.nextLine();
+		                
+		                System.out.println("Please enter email:");
+		                email = sc.nextLine();
+		                
+		                System.out.println("Please enter home phone number:");
+		                home_pn = sc.nextLine();
+		                
+		                System.out.println("Please enter work phone number:");
+		                work_pn = sc.nextLine();
+		                
+		                System.out.println("Please enter cell phone number:");
+		                cell_pn = sc.nextLine();
+		                
+		                System.out.println("Please enter whether is person is in the mailing list or not \n" + "Possible values are 1 for yes, 0 for no and 2 for unknown:");
+		                mailing_list = sc.nextInt();
+		                sc.nextLine();
+		                
+		                System.out.println("Please enter the affiliated company name (na if no affiliation):");
+		                company = sc.nextLine();
+		            
+		                
+		                
+		                //Connecting to database and performing query
+		                //---------------------------------------------
+		                
+		                System.out.println("Connecting to the database...");
+		                // Get a database connection and prepare a query statement
+		                try (final Connection connection = DriverManager.getConnection(URL)) {
+		                	
+		                	// Prepare the stored procedure call
+		                	final PreparedStatement stmt_person = connection.prepareCall("{call insert_person(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}");
+		        			
+		        			// Set the parameters
+		                	stmt_person.setString(1, ssnP2);
+		                	stmt_person.setString(2, name);
+		                	stmt_person.setTimestamp(3, dob);  //2001-12-23 
+		                	stmt_person.setString(4, race);
+		                	stmt_person.setString(5, gender);
+		                	stmt_person.setString(6, profession);
+		                	stmt_person.setString(7, mailing_add);
+		                	stmt_person.setString(8, email);
+		                	stmt_person.setString(9, home_pn);
+		                	stmt_person.setString(10, work_pn);
+		                	stmt_person.setString(11, cell_pn);
+		                    
+		                    //Potential null variables
+		                    if (mailing_list == 2) {
+		                    	stmt_person.setNull(12, Types.NULL); 
+		                	} else {
+		                		stmt_person.setInt(12,  mailing_list);
+		                	}
+		                    
+		                    if (company.equals("na")) {
+		                    	stmt_person.setNull(13, Types.NULL); 
+		                	} else {
+		                		stmt_person.setString(13,  company);
+		                	}
+		            	
+		                                         
+		                    // Call stored procedures
+		        			System.out.println("Inserting new row into person..");
+		        			stmt_person.execute();
+		        			System.out.println("1 new row inserted \n");
+		        			
+		        			
+		        			///////////////////////Emergency Contacts/////////////////////
+		        			System.out.println("How many emergency contacts for this person?:");
+			                int nEC = sc.nextInt();
+			                sc.nextLine();
+			                
+		        			// Prepare the stored procedure call
+		                	final PreparedStatement stmt_ec = connection.prepareCall("{call insert_EC(?, ?, ?, ?, ?, ?, ?, ?)}");
+		                	while (nEC>0) {
+		                		
+		                		System.out.println("Enter Information for Emergency Contact #"+nEC);
+		                		
+		                		System.out.println("Please enter EC name:");
+		    	                name = sc.nextLine();
+		    	                
+		    	                System.out.println("Please enter EC relationship:");
+		    	                String relationship = sc.nextLine();
+		    	                
+		    	                System.out.println("Please enter EC mailing address(na is acceptable):");
+		    	                mailing_add = sc.nextLine();
+		    	                
+		    	                System.out.println("Please enter EC email:");
+		    	                email = sc.nextLine();
+		    	                
+		    	                System.out.println("Please enter EC home phone number:");
+		    	                home_pn = sc.nextLine();
+		    	                
+		    	                System.out.println("Please enter EC work phone number(na is acceptable):");
+		    	                work_pn = sc.nextLine();
+		    	                
+		    	                System.out.println("Please enter EC cell phone number(na is acceptable):");
+		    	                cell_pn = sc.nextLine();
+			        			
+			        			// Set the parameters
+			                	stmt_ec.setString(1, ssnP2);
+			                	stmt_ec.setString(2, name);
+			                	stmt_ec.setString(3, relationship);
+			                	stmt_ec.setString(5, email);
+			                	stmt_ec.setString(6, home_pn);
+			                    
+			                    //Potential null variables
+			                	if (mailing_add.equals("na")) {stmt_ec.setNull(4, Types.NULL);} else {stmt_ec.setString(4,  mailing_add);}
+			                    if (work_pn.equals("na")) {stmt_ec.setNull(7, Types.NULL);} else {stmt_ec.setString(7,  work_pn);}
+			                    if (cell_pn.equals("na")) {stmt_ec.setNull(8, Types.NULL); } else {stmt_ec.setString(8,  cell_pn);}
+			            	
+			                                         
+			                    // Call stored procedures
+			        			System.out.println("Inserting new row into emergency contact.");
+			        			stmt_ec.execute();
+			        			System.out.println("1 new row inserted \n");
+		        				
+		        				nEC--;
+		        			}
+		        			
+		                }
+	            	} else {
+	            		System.out.println("Please enter volunteer ssn:");
+		                ssnP2 = sc.nextLine();
+	            	}
+	                
+	                
+	                
+	                //////////////////////Creating Volunteer//////////////////////////
+	            	
+	            	// Collect values for every record from user inputs
+	            	//--------------------------------------------------
+	                
+	                System.out.println("Please enter Volunteer specific information:");
+	                System.out.println("Please enter joining date:");
+	                String j_date = sc.nextLine();
+	                Timestamp jd = Timestamp.valueOf(j_date);
+	                
+	                System.out.println("Please enter most recent training date:");
+	                String tr_date = sc.nextLine();
+	                Timestamp trd = Timestamp.valueOf(tr_date);
+	                
+	                System.out.println("Please enter most recent training location:");
+	                String tr_loc = sc.nextLine();
+	                
+	                
+	                //Connecting to database and performing query
+	                //---------------------------------------------
+	                
+	                System.out.println("Connecting to the database...");
+	                // Get a database connection and prepare a query statement
+	                try (final Connection connection = DriverManager.getConnection(URL)) {
+	                	
+	                	// Prepare the stored procedure call
+	                	final PreparedStatement stmt_vlnt = connection.prepareCall("{call query3a(?, ?, ?, ?)}");
+	        			
+	        			// Set the parameters
+	                	stmt_vlnt.setString(1, ssnP2);
+	                	stmt_vlnt.setTimestamp(2, jd);  
+	                	stmt_vlnt.setTimestamp(3, trd);  
+	                	stmt_vlnt.setString(4, tr_loc); 
+	                	
+	                	
+	                    // Call stored procedures
+	        			System.out.println("Inserting new row into volunteer..");
+	        			stmt_vlnt.execute();
+	        			System.out.println("1 new row inserted \n");
+	        			
+	        			///////////////////////Volunteer-Team Association/////////////////////
+	        			System.out.println("How many teams do you want to associate with this volunteer?:");
+		                int nt = sc.nextInt();
+		                sc.nextLine();
+		                
+		                //predefining variables for later use
+		                String team_name;
+		                int active;
+		                float hours;
+		                int leader;
+		                
+	        			// Prepare the stored procedure call
+	                	final PreparedStatement stmt_work = connection.prepareCall("{call query3b(?, ?, ?, ?, ?)}");
+	                	while (nt>0) {
+	                		
+	                		System.out.println("Enter Information for volunteer-team #"+nt);
+	                		
+	    	                System.out.println("Please enter team name:");
+	    	                team_name= sc.nextLine();
+	    	                
+	    	                System.out.println("Please enter active status of this volunteer [0/1]:");
+	    	                active = sc.nextInt();
+	    	                sc.nextLine();
+	    	                
+	    	                System.out.println("Please enter the number of hours worked for this team this month:");
+	    	                hours = sc.nextFloat();
+	    	                sc.nextLine();
+	    	                
+	    	                System.out.println("Is this volunteer the leader of this team? [0/1]:");
+	    	                leader = sc.nextInt();
+	    	                sc.nextLine();
+	    	                
+	    	                
+		        			// Set the parameters
+	    	                stmt_work.setString(1, team_name);
+	    	                stmt_work.setString(2, ssnP2);
+	    	                stmt_work.setInt(3, active);
+	    	                stmt_work.setFloat(4, hours);
+	    	                stmt_work.setInt(5, leader);
+		                                             
+		                    // Call stored procedures
+		        			System.out.println("Inserting new row into work table.");
+		        			stmt_work.execute();
+		        			System.out.println("1 new row inserted \n");
+	        				
+	        				nt--;
+	        			}
+        			
+	                }
+	                
 	                break;
 	                
 	            
