@@ -1,20 +1,21 @@
-DROP TABLE IF EXISTS Person;
-DROP TABLE IF EXISTS External_organization;
 DROP TABLE IF EXISTS Emergency_contact;
-DROP TABLE IF EXISTS Client;
-DROP TABLE IF EXISTS Volunteer;
-DROP TABLE IF EXISTS Employee;
-DROP TABLE IF EXISTS Donor;
-DROP TABLE IF EXISTS Team;
 DROP TABLE IF EXISTS Work;
 DROP TABLE IF EXISTS Serves;
 DROP TABLE IF EXISTS Needs;
 DROP TABLE IF EXISTS Insurance_providers;
 DROP TABLE IF EXISTS Expenses;
-DROP TABLE IF EXISTS Donation;
 DROP TABLE IF EXISTS Contribute;
 DROP TABLE IF EXISTS Donate;
+DROP TABLE IF EXISTS Donation;
 DROP TABLE IF EXISTS Sponsors;
+DROP TABLE IF EXISTS Client;
+DROP TABLE IF EXISTS Volunteer;
+DROP TABLE IF EXISTS Team;
+DROP TABLE IF EXISTS Employee;
+DROP TABLE IF EXISTS Donor;
+DROP TABLE IF EXISTS Person;
+DROP TABLE IF EXISTS External_organization;
+
 
 
 
@@ -34,7 +35,7 @@ CREATE TABLE External_organization (
 CREATE TABLE Person (
   SSN INT PRIMARY KEY,
   person_name VARCHAR(50) NOT NULL,
-  Date_of_birth VARCHAR(20) NOT NULL,
+  Date_of_birth DATETIME NOT NULL,
   Race VARCHAR(20) NOT NULL,
   Gender VARCHAR(20) NOT NULL,
   Profession VARCHAR(50) NOT NULL,
@@ -69,7 +70,7 @@ CREATE TABLE Client (
   Doctor_phone_number VARCHAR(20) NOT NULL,
   Attorney_name VARCHAR(50) NOT NULL,
   Attorney_phone_number VARCHAR(20) NOT NULL,
-  Date_of_first_assignment VARCHAR(20) NOT NULL,
+  Date_of_first_assignment DATETIME NOT NULL,
   CONSTRAINT PK_cli_ssn PRIMARY KEY (SSN),
   CONSTRAINT FK_cli_ssn FOREIGN KEY (SSN) REFERENCES Person (SSN)
   ON DELETE CASCADE
@@ -78,8 +79,8 @@ CREATE TABLE Client (
 
 CREATE TABLE Volunteer (
   SSN INT,
-  Joining_date VARCHAR(20) NOT NULL,
-  Last_training_date VARCHAR(20) NOT NULL,
+  Joining_date DATETIME NOT NULL,
+  Last_training_date DATETIME NOT NULL,
   Last_training_location VARCHAR(20) NOT NULL,
   CONSTRAINT PK_vol_ssn PRIMARY KEY (SSN),
   CONSTRAINT FK_vol_ssn FOREIGN KEY (SSN) REFERENCES Person (SSN)
@@ -91,7 +92,7 @@ CREATE TABLE Employee (
   SSN INT,
   Salary REAL NOT NULL,
   Marital_status VARCHAR(20) NOT NULL,
-  Hire_date VARCHAR(20) NOT NULL,
+  Hire_date DATETIME NOT NULL,
   CONSTRAINT PK_emp_ssn PRIMARY KEY (SSN),
   CONSTRAINT FK_emp_ssn FOREIGN KEY (SSN) REFERENCES Person (SSN)
   ON DELETE CASCADE
@@ -110,9 +111,9 @@ CREATE TABLE Donor (
 CREATE TABLE Team (
   Team_name VARCHAR(20) PRIMARY KEY,
   Team_type VARCHAR(20) NOT NULL,
-  Date_formed VARCHAR(20) NOT NULL,
+  Date_formed DATETIME NOT NULL,
   Employee_SSN INT,
-  Report_date VARCHAR(20) DEFAULT 'Unavailable',
+  Report_date DATETIME,
   Report_description VARCHAR(100) DEFAULT 'Unavailable',
   CONSTRAINT FK_team FOREIGN KEY (Employee_SSN) REFERENCES Employee (SSN)
 );
@@ -139,7 +140,7 @@ CREATE TABLE Serves (
 
 CREATE TABLE Expenses (
   Employee_SSN INT NOT NULL,
-  Date_charged VARCHAR(20) NOT NULL,
+  Date_charged DATETIME NOT NULL,
   Amount REAL NOT NULL,
   Expense_description VARCHAR(100) NOT NULL,
   CONSTRAINT PK_exp PRIMARY KEY (Employee_SSN, Date_charged, Amount, Expense_description),
@@ -166,14 +167,14 @@ CREATE TABLE Needs (
 
 CREATE TABLE Donation (
   DonationID INT PRIMARY KEY,
-  Donation_date VARCHAR(20) NOT NULL,
+  Donation_date DATETIME NOT NULL,
   Amount REAL NOT NULL,
   Donation_Type VARCHAR(20) NOT NULL,
   Fund_raising_campaign VARCHAR(50) DEFAULT 'N/A',
   Check_number VARCHAR(20) DEFAULT 'N/A',
   CC_Number VARCHAR(20) DEFAULT 'N/A',
   CC_type VARCHAR(20) DEFAULT 'N/A',
-  CC_Exp_Date VARCHAR(20) DEFAULT 'N/A',
+  CC_Exp_date VARCHAR(20) DEFAULT 'N/A',
   Anonymity BINARY(1) NOT NULL,
 );
 
