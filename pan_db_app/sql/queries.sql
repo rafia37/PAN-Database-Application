@@ -626,11 +626,15 @@ AS
 BEGIN
     DELETE FROM dbo.Person 
     WHERE SSN IN
-        (SELECT ip.Client_SSN AS SSN
-        FROM dbo.Insurance_providers AS ip
-        JOIN dbo.Needs AS nd
-            ON ip.Client_SSN = nd.Client_SSN
-        WHERE )
+        (SELECT Client_SSN AS SSN 
+        FROM dbo.Insurance_providers AS ip,
+            (SELECT Client_SSN FROM dbo.Needs
+            WHERE Need_name = 'Transportation'
+                AND Importance < 5) AS temp 
+        WHERE ip.Client_SSN = temp.Client_SSN
+            AND 'Health' NOT IN
+                (SELECT Type_of_insurance FROM ip WHERE ip.Client_SSN = temp.Client_SSN) 
+        );
 END
 GO
 
