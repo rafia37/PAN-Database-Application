@@ -5,6 +5,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.Timestamp;
+import java.sql.Types;
 
 public class pan_db_app {
 
@@ -12,7 +14,7 @@ public class pan_db_app {
     final static String HOSTNAME = "bush0037-sql-server.database.windows.net";
     final static String DBNAME = "pan-db";
     final static String USERNAME = "bush0037";
-    final static String PASSWORD = "*********";
+    final static String PASSWORD = "gf37C5I5zvLi";
 
     // Database connection string
     final static String URL = String.format("jdbc:sqlserver://%s:1433;database=%s;user=%s;password=%s;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;",
@@ -53,7 +55,82 @@ public class pan_db_app {
             option = sc.next(); // Read in the user option selection
             
             switch (option) { // Switch between different options
-	            case "1": // Insert a new faculty member
+	            case "1": // Insert a new team
+	            	
+	            	
+	            	//Predefining potential null variables
+	            	//-------------------------------------
+	            	int ssn = 1234567890;
+	            	String report_date = "1900-01-01 00:00:00";
+	            	String report_des = "unavailable";
+	            	Timestamp rd = Timestamp.valueOf(report_date);
+	            	
+	            	
+	            	// Collect values for every record from user inputs
+	            	//--------------------------------------------------
+	            	
+                    System.out.println("Please enter team name:");
+                    sc.nextLine();
+                    final String tname = sc.nextLine(); // Read in the user input of faculty ID
+
+                    System.out.println("Please enter team type:");
+                    final String ttype = sc.nextLine(); // Read in user input of faculty name (white-spaces allowed).
+                    
+                    System.out.println("Please enter the date this team was formed (yyyy-mm-dd hh:mm:ss):");
+                    final String tdate = sc.nextLine();
+                    Timestamp td = Timestamp.valueOf(tdate);
+                    
+                    System.out.println("Do you have the employee (team supervisor) information? [y/n]");
+                    final String einfo = sc.nextLine();
+                    
+                    
+                    if (einfo=="y") {
+	                    System.out.println("Please enter integer Employee SSN (If known):");
+	                    ssn = sc.nextInt(); // Read in user input of Department ID
+	                    sc.nextLine(); //To consume the next line character/tag
+	                    
+	                    System.out.println("Please enter report date (If available):");
+	                    report_date = sc.nextLine(); // Read in user input of faculty name (white-spaces allowed).
+	                    rd = Timestamp.valueOf(report_date);
+	                    
+	                    System.out.println("Please enter brief (max 100 characters) report description (If available):");
+	                    report_des = sc.nextLine();
+                    }
+                    
+                    
+                    
+                    //Connecting to database and performing query
+                    //---------------------------------------------
+                    
+                    System.out.println("Connecting to the database...");
+                    // Get a database connection and prepare a query statement
+                    try (final Connection connection = DriverManager.getConnection(URL)) {
+                    	
+                    	// Prepare the stored procedure call
+                    	final PreparedStatement statement = connection.prepareCall("{call query1(?, ?, ?, ?, ?, ?)}");
+            			
+            			// Set the parameters
+            			statement.setString(1, tname);
+                        statement.setString(2, ttype);
+                        statement.setTimestamp(3, td);  //2001-12-23 00:00:00
+                        if (einfo=="y") {
+	                        statement.setInt(4, ssn);
+	                        statement.setTimestamp(5, rd);
+	                        statement.setString(6, report_des); 
+                        } else {
+	                        statement.setNull(4, Types.NULL);
+	                        statement.setNull(5, Types.NULL);
+	                        statement.setNull(6, Types.NULL);
+	                    }
+                	
+                                             
+                        // Call stored procedure
+            			System.out.println("Inserting new row into team..");
+            			statement.execute();
+            			System.out.println("1 new row inserted");
+            			
+                    }
+
 	            	break;
 	                
 	                
