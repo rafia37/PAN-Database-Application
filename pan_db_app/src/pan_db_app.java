@@ -44,8 +44,11 @@ public class pan_db_app {
             "19) Write a file consisting of names and mailing addresses of all people on the mailing list \n" +
             "20) Quit \n";
 
+    
+    
+    
     public static void main(String[] args) throws SQLException {
-
+    	
         System.out.println("WELCOME TO THE PATIENT ASSISTANT NETWORK DATABASE SYSTEM");
 
         final Scanner sc = new Scanner(System.in); // Scanner is used to collect the user input
@@ -71,17 +74,17 @@ public class pan_db_app {
 	            	
                     System.out.println("Please enter team name:");
                     sc.nextLine();
-                    final String tname = sc.nextLine(); // Read in the user input of faculty ID
+                    String tname = sc.nextLine(); // Read in the user input of faculty ID
 
                     System.out.println("Please enter team type:");
-                    final String ttype = sc.nextLine(); // Read in user input of faculty name (white-spaces allowed).
+                    String ttype = sc.nextLine(); // Read in user input of faculty name (white-spaces allowed).
                     
                     System.out.println("Please enter the date this team was formed (yyyy-mm-dd hh:mm:ss):");
-                    final String tdate = sc.nextLine();
+                    String tdate = sc.nextLine();
                     Timestamp td = Timestamp.valueOf(tdate);
                     
                     System.out.println("Do you have the employee (team supervisor) information? [y/n]");
-                    final String einfo = sc.nextLine();
+                    String einfo = sc.nextLine();
                     
                     
                     if (einfo=="y") {
@@ -113,7 +116,7 @@ public class pan_db_app {
             			statement.setString(1, tname);
                         statement.setString(2, ttype);
                         statement.setTimestamp(3, td);  //2001-12-23 00:00:00
-                        if (einfo=="y") {
+                        if (einfo.equals("y")) {
 	                        statement.setInt(4, ssn);
 	                        statement.setTimestamp(5, rd);
 	                        statement.setString(6, report_des); 
@@ -134,7 +137,103 @@ public class pan_db_app {
 	            	break;
 	                
 	                
-	            case "2": // Insert a new faculty option
+	            case "2": // Insert a new client and associate with teams
+	            	
+	            	//////////////////////Creating Person//////////////////////////
+	            	// Collect values for every record from user inputs
+	            	//--------------------------------------------------
+	            	
+	                System.out.println("Please enter person ssn:");
+	                int ssnP1 = sc.nextInt();
+	                sc.nextLine();
+	                
+	                System.out.println("Please enter person name:");
+	                String name = sc.nextLine(); 
+	                
+	                System.out.println("Please enter date of birth (yyyy-mm-dd hh:mm:ss):");
+	                String bday = sc.nextLine();  //2001-12-23 00:00:00
+	                Timestamp dob = Timestamp.valueOf(bday);
+	                
+	                System.out.println("Please enter race:");
+	                String race = sc.nextLine();
+	                
+	                System.out.println("Please enter gender:");
+	                String gender = sc.nextLine();
+	                
+	                System.out.println("Please enter profession:");
+	                String profession = sc.nextLine();
+	                
+	                System.out.println("Please enter mailing address:");
+	                String mailing_add = sc.nextLine();
+	                
+	                System.out.println("Please enter email:");
+	                String email = sc.nextLine();
+	                
+	                System.out.println("Please enter home phone number:");
+	                String home_pn = sc.nextLine();
+	                
+	                System.out.println("Please enter work phone number:");
+	                String work_pn = sc.nextLine();
+	                
+	                System.out.println("Please enter cell phone number:");
+	                String cell_pn = sc.nextLine();
+	                
+	                System.out.println("Please enter whether is person is in the mailing list or not \n" + "Possible values are 1 for yes, 0 for no and 2 for unknown:");
+	                int mailing_list = sc.nextInt();
+	                sc.nextLine();
+	                
+	                System.out.println("Please enter the affiliated company name (na if no affiliation):");
+	                String company = sc.nextLine();
+	            
+	                
+	                
+	                //Connecting to database and performing query
+	                //---------------------------------------------
+	                
+	                System.out.println("Connecting to the database...");
+	                // Get a database connection and prepare a query statement
+	                try (final Connection connection = DriverManager.getConnection(URL)) {
+	                	
+	                	// Prepare the stored procedure call
+	                	final PreparedStatement statement = connection.prepareCall("{call insert_person(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}");
+	        			
+	        			// Set the parameters
+	        			statement.setInt(1, ssnP1);
+	                    statement.setString(2, name);
+	                    statement.setTimestamp(3, dob);  //2001-12-23 00:00:00
+	                    statement.setString(4, race);
+	                    statement.setString(5, gender);
+	                    statement.setString(6, profession);
+	                    statement.setString(7, mailing_add);
+	                    statement.setString(8, email);
+	                    statement.setString(9, home_pn);
+	                    statement.setString(10, work_pn);
+	                    statement.setString(11, cell_pn);
+	                    
+	                    //Potential null variables
+	                    if (mailing_list == 2) {
+	                    	System.out.println("setting ml to na");
+	                		statement.setNull(12, Types.NULL); 
+	                	} else {
+	                		statement.setInt(12,  mailing_list);
+	                	}
+	                    
+	                    if (company.equals("na")) {
+	                    	System.out.println("setting company to na");
+	                		statement.setNull(13, Types.NULL); 
+	                	} else {
+	                		System.out.println("setting company to " + company);
+	                		System.out.println(company == "na");
+	                		statement.setString(13,  company);
+	                	}
+	            	
+	                                         
+	                    // Call stored procedure
+	        			System.out.println("Inserting new row into person..");
+	        			statement.execute();
+	        			System.out.println("1 new row inserted");
+	        			
+	                }
 	                break;
 	             
 	                
