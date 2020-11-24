@@ -431,18 +431,56 @@ public class pan_db_app {
 	    	                
 	    	                
 		        			// Set the parameters
-		                	stmt_ip.setString(1, ssnP1);
-		                	stmt_ip.setString(2, need);
-		                	stmt_ip.setInt(3, imp);
+		                	stmt_need.setString(1, ssnP1);
+		                	stmt_need.setString(2, need);
+		                	stmt_need.setInt(3, imp);
 		                                             
 		                    // Call stored procedures
-		        			System.out.println("Inserting new row into insurance provider.");
-		        			stmt_ip.execute();
+		        			System.out.println("Inserting new row into needs table.");
+		        			stmt_need.execute();
 		        			System.out.println("1 new row inserted \n");
 	        				
 	        				nn--;
 	        			}
-	        			
+	                	
+	                	
+	                	
+	                	///////////////////////Client-Team Association/////////////////////
+	        			System.out.println("How many teams do you want to associate with this client?:");
+		                int nt = sc.nextInt();
+		                sc.nextLine();
+		                
+		                //predefining variables for later use
+		                String team_name;
+		                int active;
+		                
+	        			// Prepare the stored procedure call
+	                	final PreparedStatement stmt_serve = connection.prepareCall("{call query2b(?, ?, ?)}");
+	                	while (nt>0) {
+	                		
+	                		System.out.println("Enter Information for client-team #"+nt);
+	                		
+	    	                System.out.println("Please enter team name:");
+	    	                team_name= sc.nextLine();
+	    	                
+	    	                System.out.println("Please enter active status of this client [0/1]:");
+	    	                active = sc.nextInt();
+	    	                sc.nextLine();
+	    	                
+	    	                
+		        			// Set the parameters
+	    	                stmt_serve.setString(1, team_name);
+		                	stmt_serve.setString(2, ssnP1);
+		                	stmt_serve.setInt(3, active);
+		                                             
+		                    // Call stored procedures
+		        			System.out.println("Inserting new row into serves table.");
+		        			stmt_serve.execute();
+		        			System.out.println("1 new row inserted \n");
+	        				
+	        				nt--;
+	        			}
+        			
 	                }
 	                
 	                
