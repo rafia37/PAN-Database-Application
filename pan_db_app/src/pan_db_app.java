@@ -12,7 +12,7 @@ public class pan_db_app {
     final static String HOSTNAME = "bush0037-sql-server.database.windows.net";
     final static String DBNAME = "pan-db";
     final static String USERNAME = "bush0037";
-    final static String PASSWORD = "gf37C5I5zvLi";
+    final static String PASSWORD = "*********";
 
     // Database connection string
     final static String URL = String.format("jdbc:sqlserver://%s:1433;database=%s;user=%s;password=%s;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;",
@@ -51,7 +51,96 @@ public class pan_db_app {
         while (!option.equals("20")) { // As user for options until option 4 is selected
             System.out.println(PROMPT); // Print the available options
             option = sc.next(); // Read in the user option selection
-            System.out.println("current option: " + option);
+            
+            switch (option) { // Switch between different options
+	            case "1": // Insert a new faculty member
+	            	break;
+	                
+	                
+	            case "2": // Insert a new faculty option
+	                break;
+	             
+	                
+	            case "3":
+	                break;
+	                
+	            
+	            case "4": // Insert a new faculty member
+	            	break;
+	                
+	                
+	            case "5": // Insert a new faculty option
+	                break;
+	             
+	                
+	            case "6":
+	                break;
+	                
+	            
+	            case "7": // Insert a new faculty member
+	            	break;
+	                
+	                
+	            case "8": // Insert a new faculty option
+	                break;
+	             
+	                
+	            case "9":
+	                break;
+	                
+	            
+	            case "10": // Insert a new faculty member
+	            	break;
+	                
+	            
+	            case "11": // Insert a new faculty member
+	            	break;
+	                
+	                
+	            case "12": // Insert a new faculty option
+	                break;
+	             
+	                
+	            case "13":
+	                break;
+	                
+	            
+	            case "14": // Insert a new faculty member
+	            	break;
+	                
+	                
+	            case "15": // Insert a new faculty option
+	                break;
+	             
+	                
+	            case "16":
+	                break;
+	                
+	            
+	            case "17": // Insert a new faculty member
+	            	break;
+	                
+	                
+	            case "18": // Insert a new faculty option
+	                break;
+	             
+	                
+	            case "19":
+	                break;
+	                
+	            
+	            case "20": // Do nothing, the while loop will terminate upon the next iteration
+	                System.out.println("Exiting Application");
+	                break;
+	                
+	                
+	            default: // Unrecognized option, re-prompt the user for the correct one
+	                System.out.println(String.format(
+	                    "Unrecognized option: %s\n" + 
+	                    "Please try again!", 
+	                    option));
+	                break;
+            }
         }
         sc.close(); // Close the scanner before exiting the application
         
