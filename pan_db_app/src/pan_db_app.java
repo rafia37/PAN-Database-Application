@@ -789,7 +789,7 @@ public class pan_db_app {
 	                
 	            case "5": // Insert a new employee and associate with teams
 	            	
-	            	String ssnP4; //Volunteer ssn
+	            	String ssnP4; //Employee ssn
 	            	
 	            	System.out.println("Does the Employee already exist in the person database? [y/n] :");
 	            	sc.nextLine();
@@ -1188,11 +1188,444 @@ public class pan_db_app {
 	            	break;
 	                
 	                
-	            case "8": // Insert a new faculty option
+	            case "8": // Insert a new employee and associate with teams
+	            	
+	            	String ssnP7; //Employee ssn
+	            	
+	            	System.out.println("Does the Donor already exist in the person database? [y/n] :");
+	            	sc.nextLine();
+	            	String dExists = sc.nextLine();
+	            	
+	            	if (dExists.equals("n")) {
+		            	
+		            	//////////////////////Creating Person//////////////////////////
+		            	//Predefining variables for later use
+		            	//------------------------------------
+		            	String name;
+		            	String bday;
+		            	String race;
+		            	String gender;
+		            	String profession;
+		            	String mailing_add;
+		            	String email;
+		            	String home_pn;
+		            	String work_pn;
+		            	String cell_pn;
+		            	int mailing_list;
+		            	String company;
+		            	
+		            	
+		            	// Collect values for every record from user inputs
+		            	//--------------------------------------------------
+		            	
+		                System.out.println("Please enter person ssn:");
+		                ssnP7 = sc.nextLine();
+		                
+		                System.out.println("Please enter person name:");
+		                name = sc.nextLine(); 
+		                
+		                System.out.println("Please enter date of birth (yyyy-mm-dd hh:mm:ss):");
+		                bday = sc.nextLine();  //2001-12-23 00:00:00
+		                Timestamp dob = Timestamp.valueOf(bday);
+		                
+		                System.out.println("Please enter race:");
+		                race = sc.nextLine();
+		                
+		                System.out.println("Please enter gender:");
+		                gender = sc.nextLine();
+		                
+		                System.out.println("Please enter profession:");
+		                profession = sc.nextLine();
+		                
+		                System.out.println("Please enter mailing address:");
+		                mailing_add = sc.nextLine();
+		                
+		                System.out.println("Please enter email:");
+		                email = sc.nextLine();
+		                
+		                System.out.println("Please enter home phone number:");
+		                home_pn = sc.nextLine();
+		                
+		                System.out.println("Please enter work phone number:");
+		                work_pn = sc.nextLine();
+		                
+		                System.out.println("Please enter cell phone number:");
+		                cell_pn = sc.nextLine();
+		                
+		                System.out.println("Please enter whether is person is in the mailing list or not \n" + "Possible values are 1 for yes, 0 for no and 2 for unknown:");
+		                mailing_list = sc.nextInt();
+		                sc.nextLine();
+		                
+		                System.out.println("Please enter the affiliated company name (na if no affiliation):");
+		                company = sc.nextLine();
+		            
+		                
+		                
+		                //Connecting to database and performing query
+		                //---------------------------------------------
+		                
+		                System.out.println("Connecting to the database...");
+		                // Get a database connection and prepare a query statement
+		                try (final Connection connection = DriverManager.getConnection(URL)) {
+		                	
+		                	// Prepare the stored procedure call
+		                	final PreparedStatement stmt_person = connection.prepareCall("{call insert_person(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}");
+		        			
+		        			// Set the parameters
+		                	stmt_person.setString(1, ssnP7);
+		                	stmt_person.setString(2, name);
+		                	stmt_person.setTimestamp(3, dob);  //2001-12-23 
+		                	stmt_person.setString(4, race);
+		                	stmt_person.setString(5, gender);
+		                	stmt_person.setString(6, profession);
+		                	stmt_person.setString(7, mailing_add);
+		                	stmt_person.setString(8, email);
+		                	stmt_person.setString(9, home_pn);
+		                	stmt_person.setString(10, work_pn);
+		                	stmt_person.setString(11, cell_pn);
+		                    
+		                    //Potential null variables
+		                    if (mailing_list == 2) {
+		                    	stmt_person.setNull(12, Types.NULL); 
+		                	} else {
+		                		stmt_person.setInt(12,  mailing_list);
+		                	}
+		                    
+		                    if (company.equals("na")) {
+		                    	stmt_person.setNull(13, Types.NULL); 
+		                	} else {
+		                		stmt_person.setString(13,  company);
+		                	}
+		            	
+		                                         
+		                    // Call stored procedures
+		        			System.out.println("Inserting new row into person..");
+		        			stmt_person.execute();
+		        			System.out.println("1 new row inserted \n");
+		        			
+		        			
+		        			///////////////////////Emergency Contacts/////////////////////
+		        			System.out.println("How many emergency contacts for this person?:");
+			                int nEC = sc.nextInt();
+			                sc.nextLine();
+			                
+		        			// Prepare the stored procedure call
+		                	final PreparedStatement stmt_ec = connection.prepareCall("{call insert_EC(?, ?, ?, ?, ?, ?, ?, ?)}");
+		                	while (nEC>0) {
+		                		
+		                		System.out.println("Enter Information for Emergency Contact #"+nEC);
+		                		
+		                		System.out.println("Please enter EC name:");
+		    	                name = sc.nextLine();
+		    	                
+		    	                System.out.println("Please enter EC relationship:");
+		    	                String relationship = sc.nextLine();
+		    	                
+		    	                System.out.println("Please enter EC mailing address(na is acceptable):");
+		    	                mailing_add = sc.nextLine();
+		    	                
+		    	                System.out.println("Please enter EC email:");
+		    	                email = sc.nextLine();
+		    	                
+		    	                System.out.println("Please enter EC home phone number:");
+		    	                home_pn = sc.nextLine();
+		    	                
+		    	                System.out.println("Please enter EC work phone number(na is acceptable):");
+		    	                work_pn = sc.nextLine();
+		    	                
+		    	                System.out.println("Please enter EC cell phone number(na is acceptable):");
+		    	                cell_pn = sc.nextLine();
+			        			
+			        			// Set the parameters
+			                	stmt_ec.setString(1, ssnP7);
+			                	stmt_ec.setString(2, name);
+			                	stmt_ec.setString(3, relationship);
+			                	stmt_ec.setString(5, email);
+			                	stmt_ec.setString(6, home_pn);
+			                    
+			                    //Potential null variables
+			                	if (mailing_add.equals("na")) {stmt_ec.setNull(4, Types.NULL);} else {stmt_ec.setString(4,  mailing_add);}
+			                    if (work_pn.equals("na")) {stmt_ec.setNull(7, Types.NULL);} else {stmt_ec.setString(7,  work_pn);}
+			                    if (cell_pn.equals("na")) {stmt_ec.setNull(8, Types.NULL); } else {stmt_ec.setString(8,  cell_pn);}
+			            	
+			                                         
+			                    // Call stored procedures
+			        			System.out.println("Inserting new row into emergency contact.");
+			        			stmt_ec.execute();
+			        			System.out.println("1 new row inserted \n");
+		        				
+		        				nEC--;
+		        			}
+		        			
+		                }
+	            	} else {
+	            		System.out.println("Please enter donor ssn:");
+		                ssnP7 = sc.nextLine();
+	            	}
+	                
+	                
+	                
+	                //////////////////////Creating Donor//////////////////////////
+	            	
+	            	// Collect values for every record from user inputs
+	            	//--------------------------------------------------
+	                
+	                System.out.println("Please enter Donor specific information:");
+	                
+	                System.out.println("Please write about the inspiration or motivation behind your donation");
+	                String dDes = sc.nextLine();
+	                
+	                
+	                //Connecting to database and performing query
+	                //---------------------------------------------
+	                
+	                System.out.println("Connecting to the database...");
+	                // Get a database connection and prepare a query statement
+	                try (final Connection connection = DriverManager.getConnection(URL)) {
+	                	
+	                	// Prepare the stored procedure call
+	                	final PreparedStatement stmt_q8a = connection.prepareCall("{call query8a(?, ?)}");
+	        			
+	        			// Set the parameters
+	                	stmt_q8a.setString(1, ssnP7);
+	                	stmt_q8a.setString(2, dDes);  
+	                	
+	                	
+	                    // Call stored procedures
+	        			System.out.println("Inserting new row into Donor..");
+	        			stmt_q8a.execute();
+	        			System.out.println("1 new row inserted \n");
+	        			
+	        			///////////////////////Creating Donations/////////////////////
+	        			System.out.println("How many Donations would you like to make?:");
+		                int nt = sc.nextInt();
+		                sc.nextLine();
+		                
+		                //predefining variables for later use
+		                int donID;
+		                String donDate;
+		                float donAmount;
+		                String dtype;
+		                String cmpn;
+		                String check;
+		                String cc_num;
+		                String cc_type;
+		                String cc_date;
+		                int anon;
+		                
+	        			// Prepare the stored procedure call
+	                	final PreparedStatement stmt_q8b = connection.prepareCall("{call query8b(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}");
+	                	final PreparedStatement stmt_q8c = connection.prepareCall("{call query8c(?, ?)}");
+	                	while (nt>0) {
+	                		
+	                		System.out.println("Enter Information for donation #"+nt);
+	                		
+	    	                System.out.println("Please enter donation id:");
+	    	                donID= sc.nextInt();
+	    	                sc.nextLine();
+	    	                
+	    	                System.out.println("Please enter date of donation");
+	    	                donDate= sc.nextLine();
+	    	                Timestamp dDate = Timestamp.valueOf(donDate);
+	    	                
+	    	                System.out.println("Please enter amount of donation:");
+	    	                donAmount = sc.nextFloat();
+	    	                sc.nextLine();
+	    	                
+	    	                System.out.println("Please enter donation type:");
+	    	                dtype = sc.nextLine();
+	    	                
+	    	                System.out.println("Please enter campaign name if applicable (na if not):");
+	    	                cmpn = sc.nextLine();
+	    	                
+	    	                System.out.println("Please enter check number if you paid by check (na if you didn't)");
+	    	                check = sc.nextLine();
+	    	                
+	    	                System.out.println("Please enter credit card number if you paid with credit card (na if you didn't)");
+	    	                cc_num = sc.nextLine();
+	    	                
+	    	                System.out.println("Please enter credit card type if you paid with credit card (na if you didn't)");
+	    	                cc_type = sc.nextLine();
+	    	                
+	    	                System.out.println("Please enter credit card expiration date if you paid with credit card (na if you didn't)");
+	    	                cc_date = sc.nextLine();
+	    	                
+	    	                System.out.println("Please enter whether you want this donation to be anonymous or not [0/1]:");
+	    	                anon = sc.nextInt();
+	    	                sc.nextLine();
+	    	                
+	    	                
+		        			// Set the parameters
+	    	                stmt_q8b.setInt(1, donID);
+	    	                stmt_q8b.setTimestamp(2, dDate);
+	    	                stmt_q8b.setFloat(3, donAmount);
+	    	                stmt_q8b.setString(4, dtype);
+	    	                stmt_q8b.setString(5, cmpn);
+	    	                stmt_q8b.setString(6, check);
+	    	                stmt_q8b.setString(7, cc_num);
+	    	                stmt_q8b.setString(8, cc_type);
+	    	                stmt_q8b.setString(9, cc_date);
+	    	                stmt_q8b.setInt(10, anon);
+	    	                
+	    	                // Set parameters for associating
+	    	                stmt_q8c.setString(1, ssnP7);
+	    	                stmt_q8c.setInt(2, donID);
+	    	                
+		                    // Call stored procedures
+		        			System.out.println("Inserting new rows into donation and donate tables.");
+		        			stmt_q8b.execute();
+		        			stmt_q8c.execute();
+		        			System.out.println("2 new rows inserted \n");
+	        				
+	        				nt--;
+	        			}
+        			
+	                }
+	                
 	                break;
 	             
 	                
-	            case "9":
+	            case "9": 
+	            	//////////////////////Creating Organization//////////////////////////
+	            	
+	            	// Collect values for every record from user inputs
+	            	//--------------------------------------------------
+	                
+	                System.out.println("Please enter organization name:");
+	                sc.nextLine();
+	                org_name = sc.nextLine();
+
+	                System.out.println("Please enter address:");
+	                address = sc.nextLine();
+
+	                System.out.println("Please enter phone number:");
+	                org_pn = sc.nextLine();
+
+	                System.out.println("Please enter name of the contact person:");
+	                contact = sc.nextLine();
+
+	                System.out.println("Please enter business type (na if not a business):");
+	                btype = sc.nextLine();
+
+	                System.out.println("Please enter business size (na if not a business):");
+	                bsize = sc.nextLine();
+
+	                System.out.println("Please enter business website (na if not a business):");
+	                website = sc.nextLine();
+
+	                System.out.println("Please enter religious affiliation if a church (na if not a church):");
+	                church = sc.nextLine();
+	                
+	                
+	                //Connecting to database and performing query
+	                //---------------------------------------------
+	                
+	                System.out.println("Connecting to the database...");
+	                // Get a database connection and prepare a query statement
+	                try (final Connection connection = DriverManager.getConnection(URL)) {
+	                	
+	                	// Prepare the stored procedure call
+	                	final PreparedStatement stmt_q7a = connection.prepareCall("{call query7a(?, ?, ?, ?, ?, ?, ?, ?)}");
+	        			
+	        			// Set the parameters
+	                	stmt_q7a.setString(1, org_name);
+	                	stmt_q7a.setString(2, address);
+	                	stmt_q7a.setString(3, org_pn);
+	                	stmt_q7a.setString(4, contact);
+	                	stmt_q7a.setString(5, btype);
+	                	stmt_q7a.setString(6, bsize);
+	                	stmt_q7a.setString(7, website);
+	                	stmt_q7a.setString(8, church);
+	                	
+	                	
+	                    // Call stored procedures
+	        			System.out.println("Inserting new row into External Organization table..");
+	        			stmt_q7a.execute();
+	        			System.out.println("1 new row inserted \n");
+	        			
+	        			System.out.println("How many Donations would you like to make?:");
+		                int nt = sc.nextInt();
+		                sc.nextLine();
+		                
+		                //predefining variables for later use
+		                int donID;
+		                String donDate;
+		                float donAmount;
+		                String dtype;
+		                String cmpn;
+		                String check;
+		                String cc_num;
+		                String cc_type;
+		                String cc_date;
+		                int anon;
+		                
+		                final PreparedStatement stmt_q8b = connection.prepareCall("{call query8b(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}");
+		                final PreparedStatement stmt_q9 = connection.prepareCall("{call query9(?, ?)}");
+	                	while (nt>0) {
+	                		System.out.println("Enter Information for donation #"+nt);
+	                		
+	    	                System.out.println("Please enter donation id:");
+	    	                donID= sc.nextInt();
+	    	                sc.nextLine();
+	    	                
+	    	                System.out.println("Please enter date of donation");
+	    	                donDate= sc.nextLine();
+	    	                Timestamp dDate = Timestamp.valueOf(donDate);
+	    	                
+	    	                System.out.println("Please enter amount of donation:");
+	    	                donAmount = sc.nextFloat();
+	    	                sc.nextLine();
+	    	                
+	    	                System.out.println("Please enter donation type:");
+	    	                dtype = sc.nextLine();
+	    	                
+	    	                System.out.println("Please enter campaign name if applicable (na if not):");
+	    	                cmpn = sc.nextLine();
+	    	                
+	    	                System.out.println("Please enter check number if you paid by check (na if you didn't)");
+	    	                check = sc.nextLine();
+	    	                
+	    	                System.out.println("Please enter credit card number if you paid with credit card (na if you didn't)");
+	    	                cc_num = sc.nextLine();
+	    	                
+	    	                System.out.println("Please enter credit card type if you paid with credit card (na if you didn't)");
+	    	                cc_type = sc.nextLine();
+	    	                
+	    	                System.out.println("Please enter credit card expiration date if you paid with credit card (na if you didn't)");
+	    	                cc_date = sc.nextLine();
+	    	                
+	    	                System.out.println("Please enter whether you want this donation to be anonymous or not [0/1]:");
+	    	                anon = sc.nextInt();
+	    	                sc.nextLine();
+	    	                
+	    	                
+		        			// Set the parameters
+	    	                stmt_q8b.setInt(1, donID);
+	    	                stmt_q8b.setTimestamp(2, dDate);
+	    	                stmt_q8b.setFloat(3, donAmount);
+	    	                stmt_q8b.setString(4, dtype);
+	    	                stmt_q8b.setString(5, cmpn);
+	    	                stmt_q8b.setString(6, check);
+	    	                stmt_q8b.setString(7, cc_num);
+	    	                stmt_q8b.setString(8, cc_type);
+	    	                stmt_q8b.setString(9, cc_date);
+	    	                stmt_q8b.setInt(10, anon);
+	    	                
+	    	                // Set parameters for associating
+	    	                stmt_q9.setString(1, org_name);
+	    	                stmt_q9.setInt(2, donID);
+	    	                
+		                    // Call stored procedures
+		        			System.out.println("Inserting new rows into donation and donate tables.");
+		        			stmt_q8b.execute();
+		        			stmt_q9.execute();
+		        			System.out.println("2 new rows inserted \n");
+	        				
+	                		nt--;
+	                	}
+	                		
+	                	
+	                }
 	                break;
 	                
 	            
