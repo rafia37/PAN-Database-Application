@@ -1061,11 +1061,130 @@ public class pan_db_app {
 	                break;
 	             
 	                
-	            case "6":
+	            case "6": //Enter an employee expense
+	            	//Collecting parameters from user input
+	                System.out.println("Please enter Employee SSN:");
+	                sc.nextLine();
+	                String ssnP5= sc.nextLine();
+	                
+	                System.out.println("Please enter date of charge:");
+	                String charge_date = sc.nextLine();
+	                Timestamp cd = Timestamp.valueOf(charge_date);
+	                
+	                System.out.println("Please enter the amount of expense:");
+	                float amount = sc.nextFloat();
+	                sc.nextLine();
+	                
+	                System.out.println("Please enter description of expense:");
+	                String cDes= sc.nextLine();
+	                
+                	try (final Connection connection = DriverManager.getConnection(URL)) {
+                		final PreparedStatement stmt_q6 = connection.prepareCall("{call query6(?, ?, ?, ?)}");
+                		
+	        			// Set the parameters
+    	                stmt_q6.setString(1, ssnP5);
+    	                stmt_q6.setTimestamp(2, cd);
+    	                stmt_q6.setFloat(3, amount);
+    	                stmt_q6.setString(4, cDes);
+    	                
+	                    // Call stored procedures
+	        			System.out.println("Inserting row in expenses table.");
+	        			stmt_q6.execute();
+	        			System.out.println("1 row inserted \n");
+        				
+        			}
 	                break;
 	                
 	            
-	            case "7": // Insert a new faculty member
+	            case "7": // Insert a new organization and associate it with pan teams
+	            	//////////////////////Creating Organization//////////////////////////
+	            	
+	            	// Collect values for every record from user inputs
+	            	//--------------------------------------------------
+	                
+	                System.out.println("Please enter organization name:");
+	                sc.nextLine();
+	                String org_name = sc.nextLine();
+
+	                System.out.println("Please enter address:");
+	                String address = sc.nextLine();
+
+	                System.out.println("Please enter phone number:");
+	                String org_pn = sc.nextLine();
+
+	                System.out.println("Please enter name of the contact person:");
+	                String contact = sc.nextLine();
+
+	                System.out.println("Please enter business type (na if not a business):");
+	                String btype = sc.nextLine();
+
+	                System.out.println("Please enter business size (na if not a business):");
+	                String bsize = sc.nextLine();
+
+	                System.out.println("Please enter business website (na if not a business):");
+	                String website = sc.nextLine();
+
+	                System.out.println("Please enter religious affiliation if a church (na if not a church):");
+	                String church = sc.nextLine();
+	                
+	                
+	                //Connecting to database and performing query
+	                //---------------------------------------------
+	                
+	                System.out.println("Connecting to the database...");
+	                // Get a database connection and prepare a query statement
+	                try (final Connection connection = DriverManager.getConnection(URL)) {
+	                	
+	                	// Prepare the stored procedure call
+	                	final PreparedStatement stmt_q7a = connection.prepareCall("{call query7a(?, ?, ?, ?, ?, ?, ?, ?)}");
+	        			
+	        			// Set the parameters
+	                	stmt_q7a.setString(1, org_name);
+	                	stmt_q7a.setString(2, address);
+	                	stmt_q7a.setString(3, org_pn);
+	                	stmt_q7a.setString(4, contact);
+	                	stmt_q7a.setString(5, btype);
+	                	stmt_q7a.setString(6, bsize);
+	                	stmt_q7a.setString(7, website);
+	                	stmt_q7a.setString(8, church);
+	                	
+	                	
+	                    // Call stored procedures
+	        			System.out.println("Inserting new row into External Organization table..");
+	        			stmt_q7a.execute();
+	        			System.out.println("1 new row inserted \n");
+	        			
+	        			///////////////////////External Organization Association/////////////////////
+	        			System.out.println("How many teams does this organization sponsor?:");
+		                int nt = sc.nextInt();
+		                sc.nextLine();
+		                
+		                //predefining variables for later use
+		                String name_team;
+		                
+	        			// Prepare the stored procedure call
+	                	final PreparedStatement stmt_q7b = connection.prepareCall("{call query7b(?, ?)}");
+	                	while (nt>0) {
+	                		
+	                		System.out.println("Enter Information for organization-team #"+nt);
+	                		
+	    	                System.out.println("Please enter team name:");
+	    	                name_team= sc.nextLine();
+	    	                
+		        			// Set the parameters
+	    	                stmt_q7b.setString(1, org_name);
+	    	                stmt_q7b.setString(2, name_team);
+	    	                                         
+		                    // Call stored procedures
+		        			System.out.println("Inserting new row into sponsors table.");
+		        			stmt_q7b.execute();
+		        			System.out.println("1 new row inserted \n");
+	        				
+	        				nt--;
+	        			}
+      			
+	                }
+	            
 	            	break;
 	                
 	                
