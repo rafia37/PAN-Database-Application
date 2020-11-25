@@ -234,7 +234,24 @@ GO
 
 
 ---- QUERY 4----
-----Run query_3b
+DROP PROCEDURE IF EXISTS query4;
+
+GO
+CREATE PROCEDURE query4 
+(
+    @team VARCHAR(20),
+    @ssn VARCHAR(20),
+    @hours REAL
+)
+AS
+BEGIN
+    UPDATE dbo.Work
+    SET Monthly_hours = @hours
+    WHERE Team_name = @team
+        AND Volunteer_SSN = @ssn;  
+END
+GO
+
 
 
 
@@ -522,7 +539,7 @@ CREATE PROCEDURE query12
 AS
 BEGIN
     SELECT * FROM dbo.Person
-    WHERE SSN = 
+    WHERE SSN IN 
         (SELECT w.Volunteer_SSN AS SSN 
         FROM dbo.Work AS w
         JOIN dbo.Serves AS s
@@ -542,12 +559,12 @@ AS
 BEGIN
     SELECT person_name AS Client_Name, Mailing_address, Email_address, Home_phone_number, Work_phone_number, Cell_phone_number 
     FROM dbo.Person
-    WHERE SSN = 
+    WHERE SSN IN 
         (SELECT sr.Client_SSN AS SSN 
         FROM dbo.Serves AS sr
         JOIN dbo.Sponsors AS sp
             ON sr.Team_name = sp.Team_name 
-        WHERE SUBSTRING(sp.Org_name, 1, 1) BETWEEN 'B' AND 'K')
+        WHERE SUBSTRING(sp.Org_name, 1, 1) BETWEEN 'b' AND 'k')
     ORDER BY Client_Name;
 END
 GO
@@ -561,11 +578,11 @@ GO
 CREATE PROCEDURE query14 
 AS
 BEGIN
-    SELECT person_name AS Employee_Name, SUM(Amount) AS Total_Donation, MAX(Anonymity)
+    SELECT person_name AS Employee_Name, SUM(Amount) AS Total_Donation, MAX(Anonymity) AS Donation_Anonymity
     FROM dbo.Donate AS d1
     JOIN dbo.Donation AS d2 ON d1.DonationID = d2.DonationID
     JOIN dbo.Person AS p ON p.SSN = d1.Donor_SSN
-    WHERE Donor_SSN = 
+    WHERE Donor_SSN IN 
         (SELECT d.SSN AS Donor_SSN
         FROM dbo.Donor AS d, dbo.Employee AS e 
         WHERE d.SSN = e.SSN)
@@ -603,7 +620,7 @@ AS
 BEGIN
     UPDATE dbo.Employee
     SET Salary = Salary*1.1
-    WHERE SSN =  
+    WHERE SSN IN  
         (SELECT temp.SSN 
         FROM 
             (SELECT Employee_SSN AS SSN, COUNT(*) AS nDon 
@@ -627,14 +644,14 @@ AS
 BEGIN
     DELETE FROM dbo.Person 
     WHERE SSN IN
-        (SELECT Client_SSN AS SSN 
+        (SELECT ip.Client_SSN AS SSN 
         FROM dbo.Insurance_providers AS ip,
             (SELECT Client_SSN FROM dbo.Needs
             WHERE Need_name = 'Transportation'
                 AND Importance < 5) AS temp 
         WHERE ip.Client_SSN = temp.Client_SSN
             AND 'Health' NOT IN
-                (SELECT Type_of_insurance FROM ip WHERE ip.Client_SSN = temp.Client_SSN) 
+                (SELECT Type_of_insurance FROM dbo.Insurance_providers WHERE dbo.Insurance_providers.Client_SSN = temp.Client_SSN) 
         );
 END
 GO

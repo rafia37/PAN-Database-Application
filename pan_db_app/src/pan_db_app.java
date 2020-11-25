@@ -958,7 +958,7 @@ public class pan_db_app {
 		        			
 		                }
 	            	} else {
-	            		System.out.println("Please enter volunteer ssn:");
+	            		System.out.println("Please enter employee ssn:");
 		                ssnP4 = sc.nextLine();
 	            	}
 	                
@@ -972,6 +972,7 @@ public class pan_db_app {
 	                System.out.println("Please enter Employee specific information:");
 	                System.out.println("Please enter salary:");
 	                float salary = sc.nextFloat();
+	                sc.nextLine();
 	                
 	                System.out.println("Please enter marital status:");
 	                String mStatus = sc.nextLine();
@@ -994,8 +995,8 @@ public class pan_db_app {
 	        			// Set the parameters
 	                	stmt_q5a.setString(1, ssnP4);
 	                	stmt_q5a.setFloat(2, salary);  
-	                	stmt_q5a.setString(4, mStatus); 
-	                	stmt_q5a.setTimestamp(3, hd);  
+	                	stmt_q5a.setString(3, mStatus); 
+	                	stmt_q5a.setTimestamp(4, hd);  
 	                	
 	                	
 	                	
@@ -1701,28 +1702,176 @@ public class pan_db_app {
 	            	break;
 	                
 	                
-	            case "12": // Insert a new faculty option
+	            case "12": //list of volunteers that are members of teams that support a particular client 
+	            	
+	            	System.out.println("Connecting to the database...");
+                    // Get the database connection, create statement and execute it right away, as no user input need be collected
+                    try (final Connection connection = DriverManager.getConnection(URL)) {
+                        System.out.println("Dispatching the query...");
+                        
+                        //prepare query statement
+                        final PreparedStatement statement = connection.prepareCall("{call query12(?)}");
+                        
+                        //set parameters
+                        System.out.println("Please enter client ssn:");
+                        sc.nextLine();
+                        String ssnP11 = sc.nextLine();
+                        statement.setString(1, ssnP11);
+                        
+                        final ResultSet resultSet = statement.executeQuery();
+                        
+                        System.out.println("List of volunteers who support this particular client:");
+                        System.out.println("SSN        |   Volunteer Name  |     Date of birth     |   Race   | Gender |   Profession   |      Mailing_address     |   Email_address   |  Home_phone_number |  Work_phone_number | Cell_phone_number | Mailing_list | Company_name");
+
+                        // Unpack the tuples returned by the database and print them out to the user
+                        while (resultSet.next()) {
+                            System.out.println(String.format("%s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s" ,
+                                resultSet.getString(1),
+                                resultSet.getString(2),
+                                resultSet.getString(3),
+                                resultSet.getString(4),
+                                resultSet.getString(5),
+                                resultSet.getString(6),
+                                resultSet.getString(7),
+                                resultSet.getString(8),
+                                resultSet.getString(9),
+                                resultSet.getString(10),
+                                resultSet.getString(11),
+                                resultSet.getString(12),
+                                resultSet.getString(13)));
+                        }
+                        
+                    }
 	            	
 	                break;
 	             
 	                
-	            case "13":
+	            case "13": // names and contact information of the clients that are supported by teams
+	            			//sponsored by an organization whose name starts with a letter between B and K
+	            	System.out.println("Connecting to the database...");
+                    // Get the database connection, create statement and execute it right away, as no user input need be collected
+                    try (final Connection connection = DriverManager.getConnection(URL)) {
+                        System.out.println("Dispatching the query...");
+                        
+                        //prepare query statement
+                        final PreparedStatement statement = connection.prepareCall("{call query13}");
+                        
+                        //Execute query
+                        final ResultSet resultSet = statement.executeQuery();
+                        
+                        
+                        System.out.println(" Names and contact information of the clients that are supported by teams \n"
+                        		+ "sponsored by an organization whose name starts with a letter between B and K:");
+                        System.out.println("Client_Name | Mailing_address | Email_address | Home_phone_number | Work_phone_number | Cell_phone_number");
+
+                        // Unpack the tuples returned by the database and print them out to the user
+                        while (resultSet.next()) {
+                            System.out.println(String.format("%s | %s | %s | %s | %s | %s",
+                                resultSet.getString(1),
+                                resultSet.getString(2),
+                                resultSet.getString(3),
+                                resultSet.getString(4),
+                                resultSet.getString(5),
+                                resultSet.getString(6)));
+                        }
+                        
+                    }
 	                break;
 	                
 	            
-	            case "14": // Insert a new faculty member
+	            case "14": 
+	            	System.out.println("Connecting to the database...");
+                    // Get the database connection, create statement and execute it right away, as no user input need be collected
+                    try (final Connection connection = DriverManager.getConnection(URL)) {
+                        System.out.println("Dispatching the query...");
+                        
+                        //prepare query statement
+                        final PreparedStatement statement = connection.prepareCall("{call query14}");
+                        
+                        //Execute query
+                        final ResultSet resultSet = statement.executeQuery();
+                        
+                        
+                        System.out.println("Name, total amount donated and anonimity of donors that are also employees:");
+                        System.out.println("Employee_Name | Total_Donation | Anonymity");
+
+                        // Unpack the tuples returned by the database and print them out to the user
+                        while (resultSet.next()) {
+                            System.out.println(String.format("%s | %s | %s",
+                                resultSet.getString(1),
+                                resultSet.getString(2),
+                                resultSet.getString(3)));
+                        }
+                        
+                    }
 	            	break;
 	                
 	                
 	            case "15": // Insert a new faculty option
+	            	System.out.println("Connecting to the database...");
+                    // Get the database connection, create statement and execute it right away, as no user input need be collected
+                    try (final Connection connection = DriverManager.getConnection(URL)) {
+                        System.out.println("Dispatching the query...");
+                        
+                        //prepare query statement
+                        final PreparedStatement statement = connection.prepareCall("{call query15(?)}");
+                        
+                        //set parameters
+                        System.out.println("Please enter the date:");
+                        sc.nextLine();
+                        String after_date = sc.nextLine();
+                        Timestamp aDate = Timestamp.valueOf(after_date);
+                        statement.setTimestamp(1, aDate);
+                        
+                        final ResultSet resultSet = statement.executeQuery();
+                        
+                        System.out.println("Teams which were founded after the given date:");
+
+                        // Unpack the tuples returned by the database and print them out to the user
+                        while (resultSet.next()) {
+                            System.out.println(String.format("%s",
+                                resultSet.getString(1)));
+                        }
+                        
+                    }
 	                break;
 	             
 	                
 	            case "16":
+	            	System.out.println("Connecting to the database...");
+                    // Get the database connection, create statement and execute it right away, as no user input need be collected
+                    try (final Connection connection = DriverManager.getConnection(URL)) {
+                        System.out.println("Dispatching the query...");
+                        
+                        //prepare query statement
+                        final PreparedStatement statement = connection.prepareCall("{call query16}");
+                        
+                        //Execute query
+                        statement.execute();
+                        
+                        
+                        System.out.println("Table updated with increased salary");
+                                                
+                    }
 	                break;
 	                
 	            
 	            case "17": // Insert a new faculty member
+	            	System.out.println("Connecting to the database...");
+                    // Get the database connection, create statement and execute it right away, as no user input need be collected
+                    try (final Connection connection = DriverManager.getConnection(URL)) {
+                        System.out.println("Dispatching the query...");
+                        
+                        //prepare query statement
+                        final PreparedStatement statement = connection.prepareCall("{call query17}");
+                        
+                        //Execute query
+                        statement.execute();
+                        
+                        
+                        System.out.println("Table updated with proper deletions");
+                                                
+                    }
 	            	break;
 	                
 	                
