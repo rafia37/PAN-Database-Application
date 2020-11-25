@@ -1629,15 +1629,80 @@ public class pan_db_app {
 	                break;
 	                
 	            
-	            case "10": // Insert a new faculty member
+	            case "10": //name and phone number of the doctor of a particular client
+	            	System.out.println("Connecting to the database...");
+                    // Get the database connection, create statement and execute it right away, as no user input need be collected
+                    try (final Connection connection = DriverManager.getConnection(URL)) {
+                        System.out.println("Dispatching the query...");
+                        
+                        //prepare query statement
+                        final PreparedStatement statement = connection.prepareCall("{call query10(?)}");
+                        
+                        //set parameters
+                        System.out.println("Please enter client ssn:");
+                        sc.nextLine();
+                        String ssnP9 = sc.nextLine();
+                        statement.setString(1, ssnP9);
+                        
+                        final ResultSet resultSet = statement.executeQuery();
+                        
+                        System.out.println("name and phone number of the doctor of this client:");
+                        System.out.println("Doctor Name | Phone Number");
+
+                        // Unpack the tuples returned by the database and print them out to the user
+                        while (resultSet.next()) {
+                            System.out.println(String.format("%s | %s",
+                                resultSet.getString(1),
+                                resultSet.getString(2)));
+                        }
+                        
+                    }
 	            	break;
 	                
 	            
-	            case "11": // Insert a new faculty member
+	            case "11":  //total amount of expenses charged by each employee for a particular period of time
+	            	
+	            	System.out.println("Connecting to the database...");
+                    // Get the database connection, create statement and execute it right away, as no user input need be collected
+                    try (final Connection connection = DriverManager.getConnection(URL)) {
+                        System.out.println("Dispatching the query...");
+                        
+                        //prepare query statement
+                        final PreparedStatement statement = connection.prepareCall("{call query11(?, ?, ?)}");
+                        
+                        //collect parameters from user input
+                        System.out.println("Please enter employee ssn:");
+                        sc.nextLine();
+                        String ssnP10 = sc.nextLine();
+                        
+                        System.out.println("Please enter start date of period");
+    	                String start = sc.nextLine();
+    	                Timestamp sd = Timestamp.valueOf(start);
+    	                
+    	                System.out.println("Please enter end date of period");
+    	                String end = sc.nextLine();
+    	                Timestamp ed = Timestamp.valueOf(end);
+                        
+    	                //set parameters
+                        statement.setString(1, ssnP10);
+                        statement.setTimestamp(2, sd);
+                        statement.setTimestamp(3, ed);
+                        
+                        final ResultSet resultSet = statement.executeQuery();
+
+                        // Unpack the tuples returned by the database and print them out to the user
+                        while (resultSet.next()) {
+                            System.out.println(String.format("Expense charged by this employee \n" + "during the given period is $ %s",
+                                resultSet.getString(1)));
+                        }
+                        
+                    }
+	            	
 	            	break;
 	                
 	                
 	            case "12": // Insert a new faculty option
+	            	
 	                break;
 	             
 	                
