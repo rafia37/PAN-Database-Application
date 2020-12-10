@@ -14,7 +14,7 @@ public class pan_db_app {
     final static String HOSTNAME = "bush0037-sql-server.database.windows.net";
     final static String DBNAME = "pan-db";
     final static String USERNAME = "bush0037";
-    final static String PASSWORD = "gf37C5I5zvLi";
+    final static String PASSWORD = "*********";
 
     // Database connection string
     final static String URL = String.format("jdbc:sqlserver://%s:1433;database=%s;user=%s;password=%s;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;",
