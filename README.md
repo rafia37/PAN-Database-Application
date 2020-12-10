@@ -1,5 +1,5 @@
 # PAN-Database-Application
-A database web application built from scratch using Azure SQL Database, Java, JDBC, JSP and HTML for a DBMS Class project. Descroption of the database, requirements and queries along with frequencies are provided below -
+A database web application built from scratch using Azure SQL Database, Java, JDBC, JSP and HTML for a DBMS Class project. Description of the database, requirements and queries along with frequencies are provided below -
 
 
 ### Overview
